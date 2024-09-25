@@ -27,23 +27,69 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 /////////////////////////////////////////////////////////
 
-import shopify from "@/lib/shopify";
+// import shopify from "@/lib/shopify";
 import { NextRequest, NextResponse } from "next/server";
+import { getProduct, getProducts } from "@/services/fetch-product";
 
 export async function GET(request: NextRequest) {
-  console.log("API request received: ", request.method);
+  // console.log("API request received: ", request.method);
   try {
-    const products = await shopify.product.fetchAll();
+    // const handle = await request.nextUrl.searchParams.get("handle");
+
+    const {searchParams}=new URL(request.url);
+    const handle=searchParams.get('handle');
+
+    if (handle) {
+      // console.log(handle);
+      const product = await getProduct(handle);
+      // console.log(product);
+
+      // Check if product exist
+      if (!product) {
+        console.error("No product found");
+        return NextResponse.json(
+          { error: "No product found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          product
+        },
+        { status: 200 }
+      );
+    }
+
+    const products = await getProducts();
     // res.status(200).json(products);
-    return NextResponse.json({
-      products
-    });
+    console.log("Product list: ", products);
+
+    // Check if products exist
+    if (!products) {
+      console.error("No products found");
+      return NextResponse.json(
+        { error: "No products available" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        products
+      },
+      { status: 200 }
+    );
   } catch (error) {
     // res.status(500).json({ error: 'Failed to fetch products' });
     console.error("Error fetching products:", error);
+    // return NextResponse.json(
+    //   { error: "Error fetching products" },
+    //   { status: 500 }
+    // );
     throw error; // Re-throw the error for proper handling in the calling component
   }
-};
+}
 
 //////////////////////////////////////////////////////////
 

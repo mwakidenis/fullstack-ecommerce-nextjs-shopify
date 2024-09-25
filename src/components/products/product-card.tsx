@@ -1,6 +1,16 @@
 import Image from "next/image";
 
-const ProductCard = () => {
+interface ProductProps {
+  id: string;
+  title: string;
+  description: string;
+  handle: string;
+  price: number;
+  status: string;
+}
+
+const ProductCard = ({product: ProductProps}) => {
+  // console.log(product);
   return (
     <>
 
