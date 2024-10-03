@@ -5,7 +5,7 @@ export async function getProducts() {
     const products = await shopify.product.fetchAll();
     return products;
   } catch (error) {
-    console.error("Error fetching productssss:", error);
+    console.error("Error fetching products:", error);
     // throw error; // Re-throw the error for proper handling in the calling component
     return [];
   }

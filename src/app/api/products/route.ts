@@ -1,33 +1,3 @@
-// import shopify from "@/lib/shopify";
-import { NextApiRequest, NextApiResponse } from "next";
-
-// import { NextRequest, NextResponse } from "next/server";
-// import { fetchShopifyData } from "@/lib/shopify";
-// import test from "@/app/api/test.json";
-
-///////////////////////////////////////////////////////////
-
-// import {createAdminApiClient} from '@shopify/admin-api-client';
-
-// const client = createAdminApiClient({
-//   storeDomain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_ENDPOINT || '',
-//   apiVersion: '2024-10',
-//   accessToken: process.env.NEXT_PUBLIC_SHOPIFY_ACCESS_TOKEN || '',
-// });
-
-///////////////////////////////////////////////////////////
-
-// export async function GET(request: Request) {
-//   const data = await request.json();
-
-//   return NextResponse.json({
-//     data
-//   });
-// }
-
-/////////////////////////////////////////////////////////
-
-// import shopify from "@/lib/shopify";
 import { NextRequest, NextResponse } from "next/server";
 import { getProduct, getProducts } from "@/services/fetch-product";
 
@@ -36,8 +6,8 @@ export async function GET(request: NextRequest) {
   try {
     // const handle = await request.nextUrl.searchParams.get("handle");
 
-    const {searchParams}=new URL(request.url);
-    const handle=searchParams.get('handle');
+    const { searchParams } = new URL(request.url);
+    const handle = searchParams.get("handle");
 
     if (handle) {
       // console.log(handle);
@@ -61,9 +31,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const products = await getProducts();
+    // const limit = request.limit || 10;
+    const limit = searchParams.get("limit") || 20;
+    // console.log("Limit Assigned: ", limit);
+    let products = await getProducts();
+    products = products.slice(0, Number(limit));
     // res.status(200).json(products);
-    console.log("Product list: ", products);
+    // console.log("Product list: ", filteredProducts);
 
     // Check if products exist
     if (!products) {
