@@ -15,16 +15,9 @@ const geistMono = localFont({
   weight: "100 900"
 });
 
-// import generateMetaData from "@/components/meta";
-import { defaultMetadata } from "@/components/meta";
+import { generateHomePageMetadata } from "@/components/meta-data";
 
-export const metadata = defaultMetadata;
-
-// export const metadata: Metadata = generateMetaData;
-// export const metadata: Metadata = {
-//   title: "Fullstack Ecommerce Project",
-//   description: "Shopping Made Easier"
-// };
+export const metadata = generateHomePageMetadata;
 
 export default function RootLayout({
   children
@@ -36,14 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header
-          title="Fullstack Ecommerce Project"
-          description="Shopping Made Easier"
-          keywords="{params.keywords}"
-          image=""
-          url=""
-          // url={process.env.NEXT_PUBLIC_SITE_DOMAIN}
-        />
+        <Header />
         {children}
         <Footer />
       </body>

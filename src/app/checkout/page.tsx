@@ -1,27 +1,49 @@
 "use client";
+import CheckoutForm from "@/components/products/checkout/checkout-form";
+import { cookies } from "next/headers";
+// import { generateCheckouttPageMetadata } from "@/components/meta-data";
+import PaymentForm from "@/components/products/checkout/payment-form";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import CheckoutForm from "@/components/products/checkout/checkout-form";
 import { convertToSubcurrency } from "@/lib/utils";
-
-if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
-  throw new Error("NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined");
-}
+// import { useState } from "react";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
-// async function createPaymentIntent() {
-//   const paymentIntent = await stripe.paymentIntents.create({
-//     amount: 1000, // Amount in cents
-//     currency: "usd"
-//   });
+// export const metadata = generateCheckouttPageMetadata();
 
-//   return paymentIntent.client_secret;
+// async function getCart() {
+//   const cookieStore = cookies();
+//   const cartCookie = cookieStore.get("cart")?.value;
+//   return cartCookie ? JSON.parse(cartCookie) : [];
+// }
+
+// function calculateCartSummary(cart: any[]) {
+//   const TAX_RATE = 0.1;
+//   const SHIPPING_COST = 10;
+//   const subtotal = cart.reduce(
+//     (acc: number, item: any) => acc + item.price * item.quantity,
+//     0
+//   );
+//   const taxes = subtotal * TAX_RATE;
+//   const shipping = cart.length > 0 ? SHIPPING_COST : 0;
+//   const total = subtotal + taxes + shipping;
+
+//   return { subtotal, taxes, shipping, total };
 // }
 
 export default function CheckoutPage() {
-  const amount = 49.99;
-  // const clientSecret = await createPaymentIntent();
+  // const amount = 49.99;
+
+  // These codes are temporary for checking payment gateway
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId");
+  const name = searchParams.get("name");
+  const amount = searchParams.get("price");
+  
+  // const cart = await getCart();
+  // const { total } = calculateCartSummary(cart);
 
   return (
     <div className="bg-gray-100 dark:bg-gray-900 ">
@@ -30,117 +52,25 @@ export default function CheckoutPage() {
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
             Checkout
           </h1>
-
-          {/* <!-- Shipping Address --> */}
+          {/* <h2>Order Summary</h2>
+            <p>Total: ${total.toFixed(2)}</p> */}
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-700 dark:text-white mb-2">
-              Shipping Address
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="first_name"
-                  className="block text-gray-700 dark:text-white mb-1"
-                >
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="first_name"
-                  className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="last_name"
-                  className="block text-gray-700 dark:text-white mb-1"
-                >
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="last_name"
-                  className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
-                />
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <label
-                htmlFor="address"
-                className="block text-gray-700 dark:text-white mb-1"
-              >
-                Address
-              </label>
-              <input
-                type="text"
-                id="address"
-                className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
-              />
-            </div>
-
-            <div className="mt-4">
-              <label
-                htmlFor="city"
-                className="block text-gray-700 dark:text-white mb-1"
-              >
-                City
-              </label>
-              <input
-                type="text"
-                id="city"
-                className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label
-                  htmlFor="state"
-                  className="block text-gray-700 dark:text-white mb-1"
-                >
-                  State
-                </label>
-                <input
-                  type="text"
-                  id="state"
-                  className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="zip"
-                  className="block text-gray-700 dark:text-white mb-1"
-                >
-                  ZIP Code
-                </label>
-                <input
-                  type="text"
-                  id="zip"
-                  className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* <!-- Payment Information --> */}
-
-          <div>
             <h2 className="text-xl font-semibold text-gray-700 dark:text-white mb-2">
               Payment Information
             </h2>
-            {/* <div className="grid grid-cols-2 gap-4 mt-4"> */}
+            {/* <CheckoutForm /> */}
+            {/* <PaymentForm /> */}
             <Elements
               stripe={stripePromise}
               options={{
                 mode: "payment",
                 amount: convertToSubcurrency(amount),
-                currency: "usd"
+                currency: "cad"
               }}
             >
-              <CheckoutForm amount={amount} />
+              {/* <CheckoutForm amount={amount} /> */}
+              <PaymentForm amount={amount} />
             </Elements>
-            {/* </div> */}
           </div>
         </div>
       </div>

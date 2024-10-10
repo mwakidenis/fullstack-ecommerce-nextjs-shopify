@@ -1,3 +1,7 @@
+import { generatePaymentSuccesstPageMetadata } from "@/components/meta-data";
+
+export const metadata = generatePaymentSuccesstPageMetadata();
+
 export default function PaymentSuccess({
   searchParams: { amount }
 }: {

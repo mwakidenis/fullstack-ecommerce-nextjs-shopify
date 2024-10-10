@@ -1,133 +1,89 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProduct, getProducts } from "@/services/fetch-product";
+// import { getProduct, getProducts } from "@/services/shopify-client";
+import {
+  fetchProduct,
+  fetchProducts,
+  fetchProductsByCategory
+} from "@/services/shopify-client";
 
 export async function GET(request: NextRequest) {
   // console.log("API request received: ", request.method);
+
+  const { searchParams } = new URL(request.url);
+  const handle = searchParams.get("handle");
+  const category = searchParams.get("category");
+  // const page = searchParams.get("page") || "1";
+  // const limit = searchParams.get("limit") || "10";
+  const page = Number(searchParams.get("page")) || 1;
+  const limit = Number(searchParams.get("limit")) || 10;
+
   try {
-    // const handle = await request.nextUrl.searchParams.get("handle");
-
-    const { searchParams } = new URL(request.url);
-    const handle = searchParams.get("handle");
-
     if (handle) {
-      // console.log(handle);
-      const product = await getProduct(handle);
-      // console.log(product);
-
-      // Check if product exist
+      const product = await fetchProduct(handle);
       if (!product) {
-        console.error("No product found");
         return NextResponse.json(
-          { error: "No product found" },
+          { success: false, error: "Product not found" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({ success: true, product });
+    } else if (category) {
+      const products = await fetchProductsByCategory(category);
+      if (!products || products.length === 0) {
+        return NextResponse.json(
+          { success: false, error: "No products found in this category" },
           { status: 404 }
         );
       }
 
-      return NextResponse.json(
-        {
-          product
-        },
-        { status: 200 }
-      );
+      const pageNumber = page;
+      const pageSize = limit;
+      // const pageNumber = parseInt(page, 10);
+      // const pageSize = parseInt(limit, 10);
+      const start = (pageNumber - 1) * pageSize;
+      const paginatedProducts = products.slice(start, start + pageSize);
+
+      return NextResponse.json({
+        success: true,
+        products: paginatedProducts,
+        total: products.length,
+        page: pageNumber,
+        limit: pageSize
+      });
+    } else {
+      const products = await fetchProducts(page, limit);
+
+      if (!products || products.length === 0) {
+        return NextResponse.json(
+          { success: false, error: "No products found" },
+          { status: 404 }
+        );
+      }
+
+      const pageNumber = page;
+      const pageSize = limit;
+      const start = (pageNumber - 1) * pageSize;
+      const paginatedProducts = products.slice(start, start + pageSize);
+
+      return NextResponse.json({
+        success: true,
+        products: paginatedProducts,
+        total: products.length,
+        page: pageNumber,
+        limit: pageSize
+      });
     }
 
-    // const limit = request.limit || 10;
-    const limit = searchParams.get("limit") || 20;
-    // console.log("Limit Assigned: ", limit);
-    let products = await getProducts();
-    products = products.slice(0, Number(limit));
-    // res.status(200).json(products);
-    // console.log("Product list: ", filteredProducts);
-
-    // Check if products exist
-    if (!products) {
-      console.error("No products found");
-      return NextResponse.json(
-        { error: "No products available" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      {
-        products
-      },
-      { status: 200 }
-    );
+    // const page = Number(searchParams.get("page")) || 1;
+    // const limit = Number(searchParams.get("limit")) || 20;
   } catch (error) {
+    return NextResponse.json({ success: false, error: error }, { status: 500 });
     // res.status(500).json({ error: 'Failed to fetch products' });
-    console.error("Error fetching products:", error);
+    // console.error("Error fetching products:", error);
     // return NextResponse.json(
     //   { error: "Error fetching products" },
     //   { status: 500 }
     // );
-    throw error; // Re-throw the error for proper handling in the calling component
+    // throw error; // Re-throw the error for proper handling in the calling component
   }
 }
-
-//////////////////////////////////////////////////////////
-
-// import shopify from "@/lib/shopify";
-
-// export async function GET() {
-//   // console.log("API request received: ", request.method);
-//   try {
-//     const products = await shopify.product.fetchAll();
-//     // const products = await shopify.product.fetch("/admin/api/2024-07/products.json");
-//     // const products = await client.request("endpoint");
-//     // console.log("All Products: ", products);
-//     return products;
-//     // return NextResponse.json({
-//     //   products
-//     // });
-//   } catch (error) {
-//     console.error("Error fetching products:", error);
-//     // response.status(500).json({ error: "Failed to fetch products" });
-//     throw error;
-//   }
-// }
-
-////////////////////////////////////////////////////////////
-
-// export async function GET(request: NextRequest) {
-//   console.log("API request received: ", request.method);
-//   try {
-//     // const products = await fetchShopifyData("/api/2024-07/graphql.json");
-//     const products = await fetchShopifyData("/admin/api/2024-07/products.json");
-//     // const products = await client.request("endpoint");
-//     // return response.data;
-//     return NextResponse.json({
-//       products
-//     });
-//   } catch (error) {
-//     console.error("Error fetching products:", error);
-//     // response.status(500).json({ error: "Failed to fetch products" });
-//     throw error;
-//   }
-// }
-
-///////////////////////////////////////////////////////////
-
-// import type { NextApiRequest, NextApiResponse } from "next";
-// import { fetchShopifyData } from "@/lib/shopify";
-
-// export default async function handler(
-//   req: NextApiRequest,
-//   res: NextApiResponse
-// ) {
-//   console.log("API request received: ", req.method);
-//   if (req.method !== "GET") {
-//     res.setHeader("Allow", ["GET"]);
-//     res.status(405).end(`Method ${req.method} Not Allowed`);
-//     return;
-//   }
-
-//   try {
-//     const products = await fetchShopifyData("/admin/api/2024-09/products.json");
-//     // const products: ShopifyProduct[] = await fetchShopifyData("/admin/api/2024-09/products.json");
-//     res.status(200).json(products);
-//     console.log(products);
-//   } catch (error) {
-//     res.status(500).json({ error: "Failed to fetch products" });
-//   }
-// }

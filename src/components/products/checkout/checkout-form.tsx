@@ -1,100 +1,107 @@
 "use client";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
-import React, { useEffect, useState } from "react";
-import {
-  useStripe,
-  useElements,
-  PaymentElement
-} from "@stripe/react-stripe-js";
-import { convertToSubcurrency } from "@/lib/utils";
+export interface PaymentProps {
+  total: string;
+}
 
-const CheckoutPage = ({ amount }: { amount: number }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [errorMessage, setErrorMessage] = useState<string>();
-  const [clientSecret, setClientSecret] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetch(
-      `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/checkout/create-payment-intent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ amount: convertToSubcurrency(amount) })
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => setClientSecret(data.clientSecret));
-  }, [amount]);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setLoading(true);
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    const { error: submitError } = await elements.submit();
-
-    if (submitError) {
-      setErrorMessage(submitError.message);
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await stripe.confirmPayment({
-      elements,
-      clientSecret,
-      confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/payment-success?amount=${amount}`
-      }
-    });
-
-    if (error) {
-      // This point is only reached if there's an immediate error when
-      // confirming the payment. Show the error to your customer (for example, payment details incomplete)
-      setErrorMessage(error.message);
-    } else {
-      // The payment UI automatically closes with a success animation.
-      // Your customer is redirected to your `return_url`.
-    }
-
-    setLoading(false);
-  };
-
-  if (!clientSecret || !stripe || !elements) {
-    return (
-      <div className="flex items-center justify-center">
-        <div
-          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
-          role="status"
-        >
-          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-            Loading...
-          </span>
+export default function CheckoutForm() {
+  // const { total } = amount;
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId");
+  const name = searchParams.get("name");
+  const price = searchParams.get("price");
+  return (
+    <form>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label
+            htmlFor="first_name"
+            className="block text-gray-700 dark:text-white mb-1"
+          >
+            First Name
+          </label>
+          <input
+            type="text"
+            id="first_name"
+            className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="last_name"
+            className="block text-gray-700 dark:text-white mb-1"
+          >
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="last_name"
+            className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
+          />
         </div>
       </div>
-    );
-  }
 
-  return (
-    <form onSubmit={handleSubmit} className="bg-white p-2 rounded-md">
-      {clientSecret && <PaymentElement />}
+      <div className="mt-4">
+        <label
+          htmlFor="address"
+          className="block text-gray-700 dark:text-white mb-1"
+        >
+          Address
+        </label>
+        <input
+          type="text"
+          id="address"
+          className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
+        />
+      </div>
 
-      {errorMessage && <div>{errorMessage}</div>}
+      <div className="mt-4">
+        <label
+          htmlFor="city"
+          className="block text-gray-700 dark:text-white mb-1"
+        >
+          City
+        </label>
+        <input
+          type="text"
+          id="city"
+          className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
+        />
+      </div>
 
-      <button
-        disabled={!stripe || loading}
-        className="text-white w-full p-5 bg-teal-500 mt-5 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse hover:bg-teal-700 dark:bg-teal-600 dark:text-white dark:hover:bg-teal-900"
-      >
-        {!loading ? `Place Order ( $${amount} )` : "Processing..."}
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div>
+          <label
+            htmlFor="state"
+            className="block text-gray-700 dark:text-white mb-1"
+          >
+            State
+          </label>
+          <input
+            type="text"
+            id="state"
+            className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="zip"
+            className="block text-gray-700 dark:text-white mb-1"
+          >
+            ZIP Code
+          </label>
+          <input
+            type="text"
+            id="zip"
+            className="w-full rounded-lg border py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none"
+          />
+        </div>
+      </div>
+      <button className="text-white w-full p-5 bg-teal-500 mt-5 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse hover:bg-teal-700 dark:bg-teal-600 dark:text-white dark:hover:bg-teal-900">
+        Proceed to Pay ({price})
       </button>
     </form>
   );
-};
-
-export default CheckoutPage;
+}

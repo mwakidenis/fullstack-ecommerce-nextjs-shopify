@@ -2,8 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import Navbar from "./navbar";
 import React from "react";
+// import { getCartTotalNumber } from "@/lib/utils/cart-utils";
+import { cookies } from "next/headers";
 
-export default function Header() {
+// async function getCartItemCount() {
+//   const cookieStore = cookies();
+//   const cartCookie = cookieStore.get("cart")?.value;
+//   const cart = cartCookie ? JSON.parse(cartCookie) : [];
+
+//   // Sum the total number of items in the cart
+//   return cart.reduce((total: number, item: any) => total + item.quantity, 0);
+// }
+
+export default async function Header() {
+  // const totalCart = getCartTotalNumber();
+  // const cartItemCount = await getCartItemCount();
   return (
     <>
       <nav className="bg-white border-gray-200 dark:bg-gray-900">
@@ -77,7 +90,7 @@ export default function Header() {
               href="/cart/"
               className="text-sm  text-gray-500 dark:text-white hover:underline"
             >
-              Cart (0)
+              Cart (0){/* Cart ({totalCart}) */}
             </Link>
             <Link
               href="/login/"
@@ -91,8 +104,8 @@ export default function Header() {
       <nav className="bg-gray-50 dark:bg-gray-700">
         <div className="max-w-screen-xl px-4 py-3 mx-auto">
           <div className="flex items-center">
-            {/* <Navbar active={""} /> */}
-            <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm">
+            <Navbar active={1} />
+            {/* <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm">
               <li>
                 <Link
                   href="/"
@@ -139,7 +152,7 @@ export default function Header() {
                   WINTER
                 </Link>
               </li>
-            </ul>
+            </ul> */}
           </div>
         </div>
       </nav>

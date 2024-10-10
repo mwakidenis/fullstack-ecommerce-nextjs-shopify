@@ -1,9 +1,54 @@
-import Footer from "@/components/layouts/footer";
-import Header from "@/components/layouts/header";
+import { generateCartPageMetadata } from "@/components/meta-data";
 import Image from "next/image";
 import Link from "next/link";
+// import { getCart } from '../lib/cart';
+import { getCart } from "@/lib/utils/cart-utils";
+import { removeFromCart, updateQuantity } from "../actions/cart-actions";
 
-export default function Cart() {
+// import { cookies } from "next/headers";
+
+const TAX_RATE = 0.13; // 10% tax
+const SHIPPING_COST = 10; // Flat shipping cost
+
+// async function getCart() {
+//   const cookieStore = cookies();
+//   const cartCookie = cookieStore.get("cart")?.value;
+//   return cartCookie ? JSON.parse(cartCookie) : [];
+// }
+
+// function calculateCartSummary(cart: any[]) {
+//   const subtotal = cart.reduce(
+//     (acc: number, item: any) => acc + item.price * item.quantity,
+//     0
+//   );
+//   const taxes = subtotal * TAX_RATE;
+//   const shipping = cart.length > 0 ? SHIPPING_COST : 0;
+//   const total = subtotal + taxes + shipping;
+
+//   return { subtotal, taxes, shipping, total };
+// }
+
+export const metadata = generateCartPageMetadata();
+
+export default async function Cart() {
+  // const { cart, removeFromCart, clearCart } = useCart();
+  const cart = await getCart();
+  console.log("Cart: ", cart);
+
+  // if (cart.length === 0) {
+  //   return (
+  //     <div className="max-w-prose m-auto space-y-3">
+  //       <h1 className="text-3xl text-center font-bold">Cart</h1>
+  //       <p>Your cart is empty.</p>
+  //     </div>
+  //   );
+  // }
+
+  // const totalPrice = cart.reduce(
+  //   (total, item) => total + item.price * item.quantity,
+  //   0
+  // );
+
   return (
     <>
       <div className="bg-gray-100 h-screen  w-full max-w-7xl mx-auto py-8">
@@ -83,6 +128,35 @@ export default function Cart() {
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        <h1>Your Cart</h1>
+        {cart.items.map((item) => (
+          <div key={item.handle}>
+            <img src={item.imageUrl} alt={item.title} width="50" height="50" />
+            <p>
+              {item.title} - ${item.price} x {item.quantity}
+            </p>
+            <form action={removeFromCart}>
+              <input type="hidden" name="lineItemId" value={item.variant.id} />
+              <button type="submit">Remove</button>
+            </form>
+            <form action={updateQuantity}>
+              <input type="hidden" name="lineItemId" value={item.variant.id} />
+              <input
+                type="number"
+                name="quantity"
+                defaultValue={item.quantity}
+                min="1"
+              />
+              <button type="submit">Update Quantity</button>
+            </form>
+          </div>
+        ))}
+        <p>Total: ${cart.totalPrice}</p>
+        {cart.items.length > 0 && (
+          <Link href="/checkout/shipping">Proceed to Checkout</Link>
+        )}
       </div>
     </>
   );

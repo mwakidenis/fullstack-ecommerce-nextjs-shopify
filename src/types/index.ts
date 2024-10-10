@@ -3,20 +3,20 @@ export interface ProductProps {
   title: string;
   handle: string;
   description: string;
-//   publishedAt: string;
+  //   publishedAt: string;
   createdAt: string;
   updatedAt: string;
   vendor: string;
   productType: string;
-//   tags: string[];
+  //   tags: string[];
   variants: ProductVariant[];
   options: ProductOption[];
   images: ProductImage[];
-//   status: "active" | "archived" | "draft";
-//   priceRange: {
-//     minVariantPrice: MoneyV2;
-//     maxVariantPrice: MoneyV2;
-//   };
+  //   status: "active" | "archived" | "draft";
+  //   priceRange: {
+  //     minVariantPrice: MoneyV2;
+  //     maxVariantPrice: MoneyV2;
+  //   };
   //   id: string;
   //   title: string;
   //   description: string;
@@ -26,6 +26,7 @@ export interface ProductProps {
   //   variants: ProductVariant[];
   //   images: ProductImage[];
 }
+
 interface ProductVariant {
   id: string;
   title: string;
@@ -70,6 +71,6 @@ export interface MetaProps {
   title: string;
   description: string;
   image?: string;
-  type?: 'website' | 'article' | 'product';
+  type?: "website" | "article" | "product";
   canonical?: string;
 }

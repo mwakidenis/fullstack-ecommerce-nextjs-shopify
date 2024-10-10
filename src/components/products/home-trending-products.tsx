@@ -11,11 +11,11 @@ const HomeTrendingProducts = () => {
           {/* {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))} */}
+          {/* <ProductCardLight />
           <ProductCardLight />
           <ProductCardLight />
           <ProductCardLight />
-          <ProductCardLight />
-          <ProductCardLight />
+          <ProductCardLight /> */}
         </div>
       </div>
     </div>
