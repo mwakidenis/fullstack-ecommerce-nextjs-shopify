@@ -20,11 +20,11 @@ const shopify = Client.buildClient({
 
 // query for admin-api-client
 
-// const shopifyAdmin = createAdminApiClient({
-//   storeDomain: endpoint || "",
-//   apiVersion: LATEST_API_VERSION,
-//   accessToken: admin_access_token || ""
-// });
+const shopifyAdmin = createAdminApiClient({
+  storeDomain: endpoint || "",
+  apiVersion: LATEST_API_VERSION,
+  accessToken: admin_access_token || ""
+});
 
 const graphqlClient = new GraphQLClient(`https://${endpoint}/api/${LATEST_API_VERSION}/graphql.json`, {
   headers: {
