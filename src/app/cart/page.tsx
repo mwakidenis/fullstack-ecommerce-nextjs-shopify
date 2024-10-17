@@ -33,7 +33,7 @@ export const metadata = generateCartPageMetadata();
 export default async function Cart() {
   // const { cart, removeFromCart, clearCart } = useCart();
   const cart = await getCart();
-  console.log("Cart: ", cart);
+  // console.log("Cart: ", cart);
 
   // if (cart.length === 0) {
   //   return (
@@ -64,36 +64,69 @@ export default async function Cart() {
                       <th className="text-left font-semibold">Price</th>
                       <th className="text-left font-semibold">Quantity</th>
                       <th className="text-left font-semibold">Total</th>
+                      <th className="text-left font-semibold"></th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="py-4">
-                        <div className="flex items-center">
-                          <Image
-                            className="h-16 w-16 mr-4"
-                            src="https://via.placeholder.com/150"
-                            alt="Product image"
-                            height={500}
-                            width={500}
-                          />
-                          <span className="font-semibold">Product name</span>
-                        </div>
-                      </td>
-                      <td className="py-4">$19.99</td>
-                      <td className="py-4">
-                        <div className="flex items-center">
-                          <button className="border rounded-md py-2 px-4 mr-2">
-                            -
-                          </button>
-                          <span className="text-center w-8">1</span>
-                          <button className="border rounded-md py-2 px-4 ml-2">
-                            +
-                          </button>
-                        </div>
-                      </td>
-                      <td className="py-4">$19.99</td>
-                    </tr>
+                    {cart.items.map((item) => (
+                      <>
+                        <tr key={item.handle}>
+                          <td className="py-4">
+                            <div className="flex items-center">
+                              <Image
+                                className="h-16 w-16 mr-4"
+                                src={item.imageUrl}
+                                alt={item.title}
+                                height={500}
+                                width={500}
+                              />
+                              <span className="font-semibold">
+                                {item.title} - ${item.price} x {item.quantity}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4">${item.price}</td>
+                          <td className="py-4">
+                            <div className="flex items-center">
+                              <form action={updateQuantity}>
+                                <input
+                                  type="hidden"
+                                  name="lineItemId"
+                                  value={item.variantId}
+                                />
+                                <input
+                                  type="number"
+                                  name="quantity"
+                                  defaultValue={item.quantity}
+                                  min="1"
+                                />
+                                <button type="submit">Update Quantity</button>
+                              </form>
+
+                              {/* <button className="border rounded-md py-2 px-4 mr-2">
+                                -
+                              </button>
+                              <span className="text-center w-8">1</span>
+                              <button className="border rounded-md py-2 px-4 ml-2">
+                                +
+                              </button> */}
+                            </div>
+                          </td>
+
+                          <td className="py-4">${item.price * item.quantity}</td>
+                          <td>
+                            <form action={removeFromCart}>
+                              <input
+                                type="hidden"
+                                name="lineItemId"
+                                value={item.variantId}
+                              />
+                              <button type="submit">Remove</button>
+                            </form>
+                          </td>
+                        </tr>
+                      </>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -103,7 +136,7 @@ export default async function Cart() {
                 <h2 className="text-lg font-semibold mb-4">Summary</h2>
                 <div className="flex justify-between mb-2">
                   <span>Subtotal</span>
-                  <span>$19.99</span>
+                  <span>${cart.totalPrice}</span>
                 </div>
                 <div className="flex justify-between mb-2">
                   <span>Taxes</span>
@@ -118,45 +151,18 @@ export default async function Cart() {
                   <span className="font-semibold">Total</span>
                   <span className="font-semibold">$21.98</span>
                 </div>
-                <Link
-                  href="/checkout/"
-                  className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
-                >
-                  Checkout
-                </Link>
+                {cart.items.length > 0 && (
+                  <Link
+                    href="/checkout"
+                    className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
+                  >
+                    Proceed to Checkout
+                  </Link>
+                )}
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <h1>Your Cart</h1>
-        {cart.items.map((item) => (
-          <div key={item.handle}>
-            <img src={item.imageUrl} alt={item.title} width="50" height="50" />
-            <p>
-              {item.title} - ${item.price} x {item.quantity}
-            </p>
-            <form action={removeFromCart}>
-              <input type="hidden" name="lineItemId" value={item.variant.id} />
-              <button type="submit">Remove</button>
-            </form>
-            <form action={updateQuantity}>
-              <input type="hidden" name="lineItemId" value={item.variant.id} />
-              <input
-                type="number"
-                name="quantity"
-                defaultValue={item.quantity}
-                min="1"
-              />
-              <button type="submit">Update Quantity</button>
-            </form>
-          </div>
-        ))}
-        <p>Total: ${cart.totalPrice}</p>
-        {cart.items.length > 0 && (
-          <Link href="/checkout/shipping">Proceed to Checkout</Link>
-        )}
       </div>
     </>
   );

@@ -2,33 +2,34 @@ import { gql } from "graphql-request";
 
 export const GET_CART_QUERY = gql`
   query getCart($id: ID!) {
-    node(id: $id) {
-      ... on Checkout {
-        id
-        webUrl
-        lineItems(first: 250) {
-          edges {
-            node {
-              id
-              title
-              variant {
+    cart(id: $id) {
+      id
+      checkoutUrl
+      lines(first: 250) {
+        edges {
+          node {
+            id
+            quantity
+            merchandise {
+              ... on ProductVariant {
                 id
                 title
-                price {
+                priceV2 {
                   amount
                 }
                 product {
                   handle
                 }
                 image {
-                  src
+                  url
                 }
               }
-              quantity
             }
           }
         }
-        totalPriceV2 {
+      }
+      estimatedCost {
+        totalAmount {
           amount
         }
       }
@@ -37,163 +38,156 @@ export const GET_CART_QUERY = gql`
 `;
 
 export const CREATE_CART_MUTATION = gql`
-  mutation checkoutCreate($input: CheckoutCreateInput!) {
-    checkoutCreate(input: $input) {
-      checkout {
+  mutation cartCreate {
+    cartCreate {
+      cart {
         id
-        webUrl
-        lineItems(first: 250) {
+        checkoutUrl
+        lines(first: 250) {
           edges {
             node {
               id
-              title
-              variant {
-                id
-                title
-                price {
-                  amount
-                }
-                product {
-                  handle
-                }
-                image {
-                  src
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  priceV2 {
+                    amount
+                  }
+                  product {
+                    handle
+                  }
+                  image {
+                    url
+                  }
                 }
               }
-              quantity
             }
           }
         }
-        totalPriceV2 {
-          amount
+        estimatedCost {
+          totalAmount {
+            amount
+          }
         }
-      }
-      checkoutUserErrors {
-        field
-        message
       }
     }
   }
 `;
 
 export const ADD_TO_CART_MUTATION = gql`
-  mutation checkoutLineItemsAdd(
-    $checkoutId: ID!
-    $lineItems: [CheckoutLineItemInput!]!
-  ) {
-    checkoutLineItemsAdd(checkoutId: $checkoutId, lineItems: $lineItems) {
-      checkout {
+  mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+    cartLinesAdd(cartId: $cartId, lines: $lines) {
+      cart {
         id
-        webUrl
-        lineItems(first: 250) {
+        checkoutUrl
+        lines(first: 250) {
           edges {
             node {
               id
-              title
-              variant {
-                id
-                title
-                price {
-                  amount
-                }
-                product {
-                  handle
-                }
-                image {
-                  src
+              quantity
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  priceV2 {
+                    amount
+                  }
+                  product {
+                    handle
+                  }
+                  image {
+                    url
+                  }
                 }
               }
-              quantity
             }
           }
         }
-        totalPriceV2 {
-          amount
+        estimatedCost {
+          totalAmount {
+            amount
+          }
         }
-      }
-      checkoutUserErrors {
-        field
-        message
       }
     }
   }
 `;
 
-export const REMOVE_FROM_CART_MUTATION = `
-  mutation checkoutLineItemsRemove($checkoutId: ID!, $lineItemIds: [ID!]!) {
-    checkoutLineItemsRemove(checkoutId: $checkoutId, lineItemIds: $lineItemIds) {
-      checkout {
+export const REMOVE_FROM_CART_MUTATION = gql`
+  mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      cart {
         id
-        webUrl
-        lineItems(first: 25) {
+        checkoutUrl
+        lines(first: 250) {
           edges {
             node {
               id
-              title
               quantity
-              variant {
-                id
-                title
-                priceV2 {
-                  amount
-                }
-                product {
-                  handle
-                }
-                image {
-                  src
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  priceV2 {
+                    amount
+                  }
+                  product {
+                    handle
+                  }
+                  image {
+                    url
+                  }
                 }
               }
             }
           }
         }
-        totalPriceV2 {
-          amount
+        estimatedCost {
+          totalAmount {
+            amount
+          }
         }
-      }
-      checkoutUserErrors {
-        field
-        message
       }
     }
   }
 `;
 
-export const UPDATE_CART_MUTATION = `
-  mutation checkoutLineItemsUpdate($checkoutId: ID!, $lineItems: [CheckoutLineItemUpdateInput!]!) {
-    checkoutLineItemsUpdate(checkoutId: $checkoutId, lineItems: $lineItems) {
-      checkout {
+export const UPDATE_CART_MUTATION = gql`
+  mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart {
         id
-        webUrl
-        lineItems(first: 25) {
+        checkoutUrl
+        lines(first: 250) {
           edges {
             node {
               id
-              title
               quantity
-              variant {
-                id
-                title
-                priceV2 {
-                  amount
-                }
-                product {
-                  handle
-                }
-                image {
-                  src
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  title
+                  priceV2 {
+                    amount
+                  }
+                  product {
+                    handle
+                  }
+                  image {
+                    url
+                  }
                 }
               }
             }
           }
         }
-        totalPriceV2 {
-          amount
+        estimatedCost {
+          totalAmount {
+            amount
+          }
         }
-      }
-      checkoutUserErrors {
-        field
-        message
       }
     }
   }

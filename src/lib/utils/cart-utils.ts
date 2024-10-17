@@ -1,27 +1,29 @@
-import { cookies } from "next/headers";
-import { shopify, graphqlClient } from "../shopify";
+// import { cookies } from "next/headers";
+import Cookies from "js-cookie";
+import { graphqlClient } from "../shopify";
 import { GET_CART_QUERY, CREATE_CART_MUTATION } from "../shopify-queries";
 
-export type Checkout = {
+export type Cart = {
   id: string;
-  webUrl: string;
-  lineItems: {
+  checkoutUrl: string;
+  lines: {
     edges: Array<{
       node: {
         id: string;
-        title: string;
-        variant: {
+        quantity: number;
+        merchandise: {
           id: string;
           title: string;
-          price: { amount: string };
+          priceV2: { amount: string };
           product: { handle: string };
-          image: { src: string };
+          image: { url: string };
         };
-        quantity: number;
       };
     }>;
   };
-  totalPriceV2: { amount: string };
+  estimatedCost: {
+    totalAmount: { amount: string };
+  };
 };
 
 export interface CartItem {
@@ -30,58 +32,70 @@ export interface CartItem {
   title: string;
   price: number;
   quantity: number;
-  variant: {
-    id: string;
-    title: string;
-  };
+  variantId: string;
   imageUrl: string;
 }
 
-export interface Cart {
+export interface FormattedCart {
   id: string;
+  checkoutUrl: string;
   items: CartItem[];
   totalPrice: number;
+  // totalTax: number;
+  // totalShipping: number;
+  // grandTotalPrice: number;
 }
 
-export async function getCart(): Promise<Cart> {
-  const cartId = cookies().get("cartId")?.value;
+export async function getCart(): Promise<FormattedCart> {
+  const cartId = Cookies.get("cartId");
+  // const cartId = cookies().get("cartId")?.value;
   if (cartId) {
     try {
-      const response = await graphqlClient.request<{ node: Checkout }>(
+      const response = await graphqlClient.request<{ cart: Cart }>(
         GET_CART_QUERY,
         { id: cartId }
       );
-      return formatCart(response.node);
+      return formatCart(response.cart);
     } catch (error) {
       console.error("Error fetching cart:", error);
     }
   }
 
   // If no cart exists or there was an error, create a new one
-  const variables = { input: {} };
   const response = await graphqlClient.request<{
-    checkoutCreate: { checkout: Checkout };
-  }>(CREATE_CART_MUTATION, variables);
-  const newCart = response.checkoutCreate.checkout;
-  cookies().set("cartId", newCart.id);
+    cartCreate: { cart: Cart };
+  }>(CREATE_CART_MUTATION);
+  const newCart = response.cartCreate.cart;
+  Cookies.set("cartId", newCart.id);
+  // cookies().set("cartId", newCart.id);
   return formatCart(newCart);
+
+  // // get cart from API
+  // const response = await fetch(
+  //   `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/cart`
+  // );
+  // if (!response.ok) {
+  //   throw new Error("Failed to fetch cart");
+  // }
+  // return response.json();
 }
 
-export function formatCart(shopifyCart: Checkout): Cart {
+export function formatCart(shopifyCart: Cart): FormattedCart {
   return {
     id: shopifyCart.id,
-    items: shopifyCart.lineItems.edges.map(({ node }) => ({
+    checkoutUrl: shopifyCart.checkoutUrl,
+    items: shopifyCart.lines.edges.map(({ node }) => ({
       id: node.id,
-      handle: node.variant.product.handle,
-      title: node.title,
-      price: parseFloat(node.variant.price.amount),
+      handle: node.merchandise.product.handle,
+      title: node.merchandise.title,
+      price: parseFloat(node.merchandise.priceV2.amount),
       quantity: node.quantity,
-      variant: {
-        id: node.variant.id,
-        title: node.variant.title
-      },
-      imageUrl: node.variant.image ? node.variant.image.src : ""
+      variantId: node.merchandise.id,
+      imageUrl: node.merchandise.image ? node.merchandise.image.url : ""
     })),
-    totalPrice: parseFloat(shopifyCart.totalPriceV2.amount)
+    totalPrice: parseFloat(shopifyCart.estimatedCost.totalAmount.amount)
+    // totalTax: parseFloat(shopifyCart.estimatedCost.totalAmount.amount),
+    // totalShipping: parseFloat(shopifyCart.estimatedCost.totalAmount.amount),
+    // grandTotalPrice: parseFloat(shopifyCart.estimatedCost.totalAmount.amount)
   };
 }

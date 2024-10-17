@@ -4,22 +4,30 @@ import React, { useEffect, useState } from "react";
 import {
   useStripe,
   useElements,
-  PaymentElement
+  PaymentElement,
+  Elements
 } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import { convertToSubcurrency } from "@/lib/utils";
 // import { getCart, getCartTotalAmount, clearCart } from "@/lib/utils/cart-utils";
+import { getCart } from "@/lib/utils/cart-utils";
 
-interface PaymentProps{
-  amount: number
-}
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
+
+// interface PaymentProps {
+//   amount: number;
+// }
 
 // const PaymentForm = ({ amount }: { amount: number }) => {
-const PaymentForm = ({ amount }:PaymentProps) => {
+export default async function PaymentForm () {
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const cart = await getCart();
+  const amount = cart.totalPrice;
 
   useEffect(() => {
     fetch(
@@ -88,19 +96,26 @@ const PaymentForm = ({ amount }:PaymentProps) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-2 rounded-md">
-      {clientSecret && <PaymentElement />}
+    <Elements
+      stripe={stripePromise}
+      options={{
+        mode: "payment",
+        amount: convertToSubcurrency(cart.totalPrice),
+        currency: "cad"
+      }}
+    >
+      <form onSubmit={handleSubmit} className="bg-white p-2 rounded-md">
+        {clientSecret && <PaymentElement />}
 
-      {errorMessage && <div>{errorMessage}</div>}
+        {errorMessage && <div>{errorMessage}</div>}
 
-      <button
-        disabled={!stripe || loading}
-        className="text-white w-full p-5 bg-teal-500 mt-5 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse hover:bg-teal-700 dark:bg-teal-600 dark:text-white dark:hover:bg-teal-900"
-      >
-        {!loading ? `Place Order ( $${amount} )` : "Processing..."}
-      </button>
-    </form>
+        <button
+          disabled={!stripe || loading}
+          className="text-white w-full p-5 bg-teal-500 mt-5 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse hover:bg-teal-700 dark:bg-teal-600 dark:text-white dark:hover:bg-teal-900"
+        >
+          {!loading ? `Place Order ( $${amount} )` : "Processing..."}
+        </button>
+      </form>
+    </Elements>
   );
 };
-
-export default PaymentForm;

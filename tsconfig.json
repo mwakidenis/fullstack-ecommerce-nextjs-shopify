@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "target": "es5",
+    "forceConsistentCasingInFileNames": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -19,8 +21,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["cypress", "node"],
+    "baseUrl": ".",
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "jest.d.ts"],
   "exclude": ["node_modules"]
 }

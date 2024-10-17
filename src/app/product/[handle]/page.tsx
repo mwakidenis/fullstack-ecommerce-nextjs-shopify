@@ -61,7 +61,7 @@ export default async function Product({ params }: ProductDetailProps) {
 
   await delay(1000);
 
-  // console.log(product);
+  // console.log("Product Variants: ", product.variants);
 
   // const pageData = await getPageData(params.handle);
 
@@ -151,20 +151,20 @@ export default async function Product({ params }: ProductDetailProps) {
                     name={product.title}
                     price={product.variants[0].price.amount}
                   /> */}
-                  {/* {product.variants.map((variant) => (
+                  {product.variants.map((variant) => (
                     <div key={variant.id}>
                       <h3>{variant.title}</h3>
                       <AddToCartButton
-                        handle={product.handle}
                         variantId={variant.id}
+                        availableForSale={variant.available}
                       />
                     </div>
-                  ))} */}
-                  <DirectCheckoutButton
+                  ))}
+                  {/* <DirectCheckoutButton
                     productId={product?.handle}
                     name={product?.title}
                     price={product?.variants[0].price.amount}
-                  />
+                  /> */}
                 </div>
                 {/* <div className="w-1/2 px-2">
                   <Link
