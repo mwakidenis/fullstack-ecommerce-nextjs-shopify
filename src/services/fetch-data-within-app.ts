@@ -1,12 +1,18 @@
 import { ProductProps } from "@/types";
 
+// Fetches paginated list of products
+// @param page - Page number for pagination (default: 1)
+// @param limit - Number of products per page (default: 12)
+// @returns Object containing product array and total count
 export async function getProducts(
   page: number = 1,
-  limit: number = 20
-): Promise<ProductProps[]> {
+  limit: number = 12
+): Promise<{ products: ProductProps[]; total: number }> {
   try {
+    // Fetch products with pagination params
+    // Using no-store to prevent caching and ensure fresh data
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products?page=${page}&limit=${limit}`,
+      `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products?page=${page}`,
       {
         cache: "no-store"
       }
@@ -17,18 +23,27 @@ export async function getProducts(
         `Failed to fetch products: ${response.status} ${response.statusText}`
       );
     }
-    // const products: ProductProps[] = await response.json();
-    // return products;
+
     const data = await response.json();
-    const products = data.products;
-    return products as ProductProps[];
+
+    // Return empty array if API indicates failure
+    if (!data.success) {
+      return { products: [], total: 0 };
+    }
+
+    return {
+      products: data.products || [],
+      total: data.total || 0
+    };
   } catch (error) {
-    console.error("Error fetching products:", error);
-    // throw error; // Re-throw the error for proper handling in the calling component
-    return [];
+    // Gracefully handle errors by returning empty data
+    return { products: [], total: 0 };
   }
 }
 
+// Fetches single product details by handle (slug)
+// @param handle - Product unique identifier/slug
+// @returns Single product object or throws error
 export async function getProduct(handle: string) {
   try {
     const response = await fetch(
@@ -46,7 +61,9 @@ export async function getProduct(handle: string) {
   }
 }
 
-// Fetch latest products
+// Retrieves most recent products
+// @param count - Number of products to fetch (default: 5)
+// @returns Array of latest products
 export async function getLatestProducts(
   count: number = 5
 ): Promise<ProductProps[]> {
@@ -64,7 +81,8 @@ export async function getLatestProducts(
   }
 }
 
-// Get all categories
+// Fetches all available product categories
+// @returns Array of category objects
 export async function getCategories() {
   try {
     const res = await fetch("/api/product/categories");
@@ -79,44 +97,24 @@ export async function getCategories() {
   }
 }
 
-// Fetch products by category
+// Retrieves limited products for a specific category (For home page use in my case)
+// @param category - Category identifier
+// @param limit - Maximum number of products to return (default: 5)
+// @returns Array of products in the specified category
 export async function getHomeProductsByCategory(
   category: string,
   limit: number = 5
 ) {
-  // export const getHomeProductsByCategory = async (
-  //   category: string,
-  //   limit: number = 5
-  // ) => {
   try {
-    // const response = await fetch(
-    //   `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products/home-products-by-category/?category=${category}&limit=${limit}`
-    // );
-    // console.log("API Response: ", response);
-    // if (!response.ok) {
-    //   throw new Error(`Failed to fetch products in category ${category}`);
-    // }
-    // const data = response.json();
-    // return data;
-
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products/home-products-by-category/?category=${category}&limit=${limit}`
     );
-    // const data = await res.json();
-    // console.log("API Response: ", data);
-
-    // if (data.success) {
-    //   return data.products;
-    // }
-    // throw new Error("Failed to fetch products");
 
     if (!response.ok) {
       throw new Error(
         `Failed to fetch products: ${response.status} ${response.statusText}`
       );
     }
-    // const products: ProductProps[] = await response.json();
-    // return products;
     const data = await response.json();
     console.log("API Response: ", data);
     const products = data.products;
@@ -127,109 +125,53 @@ export async function getHomeProductsByCategory(
   }
 }
 
-// // Get products by category
-// export async function getCategoryProducts(
-//   category: string,
-//   limit: number = 5
-// ): Promise<ProductProps[]> {
-//   try {
-//     const response = await fetch(
-//       `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products/category-products/?category=${category}&limit=${limit}`
-//     );
-//     if (!response.ok) {
-//       throw new Error(`Failed to fetch products in category ${category}`);
-//     }
-//     return response.json();
-//   } catch (error) {
-//     console.error("Error fetching products", error);
-//     throw error;
-//   }
-// }
-
-export const getProductsByCategory = async (slug: string[], page: string) => {
+// Fetches paginated products for a specific category
+// @param category - Category identifier
+// @param page - Page number for pagination (default: 1)
+// @param limit - Products per page (default: 20)
+// @returns Object containing products, total count, and category existence flag
+export async function getProductsByCategory(
+  category: string,
+  page: number = 1,
+  limit: number = 20
+): Promise<{
+  products: ProductProps[];
+  total: number;
+  categoryExists: boolean;
+}> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products?category=${
-        Array.isArray(slug) ? slug.join("/") : slug
-      }&page=${page}`,
-      { cache: "no-store" }
+      `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products?category=${category}&page=${page}&limit=${limit}`,
+      {
+        cache: "no-store"
+      }
     );
-    // const response = await fetch(
-    //   `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products/category-products/?category=${category}&limit=${limit}`
-    // );
-    if (!response.ok) {
-      // throw new Error(`Failed to fetch products in category`);
-      return null;
+
+    const data = await response.json();
+
+    // Handle case where category doesn't exist
+    if (response.status === 404 && data.error === "Category not found") {
+      return {
+        products: [],
+        total: 0,
+        categoryExists: false
+      };
     }
-    return response.json();
+
+    // Handle other error responses
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch category products: ${response.status} ${response.statusText}`
+      );
+    }
+
+    return {
+      products: data.products || [],
+      total: data.total || 0,
+      categoryExists: true // Category exists even if no products found
+    };
   } catch (error) {
-    console.error("Error fetching products", error);
+    console.error("Error fetching category products:", error);
     throw error;
   }
-};
-
-// // const productQuery = `
-// //   query ProductQuery($id: ID!) {
-// //     product(id: $id) {
-// //       id
-// //       title
-// //       handle
-// //     }
-// //   }
-// // `;
-
-// // const shopQuery = `
-// //   query shop {
-// //     shop {
-// //       name
-// //     }
-// //   }
-// // `;
-
-// // const query = `
-// //     {
-// //       products(first: 10) {
-// //         edges {
-// //           node {
-// //             id
-// //             title
-// //             handle
-// //             variants(first: 1) {
-// //               edges {
-// //                 node {
-// //                   price
-// //                 }
-// //               }
-// //             }
-// //           }
-// //         }
-// //       }
-// //     }
-// //   `;
-
-// // export async function getProducts() {
-// //   try {
-// //     // const products = await shopifyAdmin.product.list();
-// //     const products = await shopifyAdmin.request(query);
-// //     return products;
-// //   } catch (error) {
-// //     console.error("Error fetching productssss:", error);
-// //     throw error; // Re-throw the error for proper handling in the calling component
-// //   }
-// // }
-
-// // export async function getProduct(handle: string) {
-// //   try {
-// //     const product = await shopifyAdmin.request(productQuery, {
-// //       variables: {
-// //         // id: "gid://shopify/Product/9626848854309",
-// //         id: handle
-// //         // handle: handle
-// //       }
-// //     });
-// //     return product;
-// //   } catch (error) {
-// //     console.error("Error fetching product details", error);
-// //     throw error;
-// //   }
-// // }
+}

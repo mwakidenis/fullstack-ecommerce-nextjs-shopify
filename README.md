@@ -3,6 +3,18 @@
 ## Overview
 This project is a modern ecommerce platform built with NextJS, TypeScript, and TailwindCSS. It features seamless data migration from WooCommerce to Shopify, custom API routes, and maintains SEO-friendly URL patterns.
 
+## Screenshots
+<div align="center">
+  <p align="center"><strong>Homepage → Products → Category → Cart → Checkout → Payment → Success</strong></p>
+  <img src="./public/images/screenshots/homepage.png" alt="Homepage" />
+  <img src="./public/images/screenshots/product-listing.png" alt="Product Listing" />
+  <img src="./public/images/screenshots/category-products.png" alt="Category Page" />
+  <img src="./public/images/screenshots/shopping-cart.png" alt="Shopping Cart" />
+  <img src="./public/images/screenshots/checkout-shipping.png" alt="Checkout Shipping" />
+  <img src="./public/images/screenshots/checkout-payment.png" alt="Checkout Payment" />
+  <img src="./public/images/screenshots/order-success.png" alt="Order Confirmation" />
+</div>
+
 ## Features
 - Dynamic data transformation from WooCommerce to Shopify
 - Custom NextJS API routes

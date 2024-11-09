@@ -12,19 +12,8 @@ const Loader = () => {
   //   };
 
   return (
-    <div className="w-full flex items-center justify-center">
-      {/* <Lottie options={defaultOptions} width={300} height={300} /> */}
-      {/* <p>Loading...</p> */}
-      <div className="flex items-center justify-center">
-        <div
-          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
-          role="status"
-        >
-          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-            Loading...
-          </span>
-        </div>
-      </div>
+    <div className="max-w-4xl mx-auto p-4 min-h-[60vh] flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
     </div>
   );
 };

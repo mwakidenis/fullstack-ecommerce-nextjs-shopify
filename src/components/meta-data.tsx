@@ -1,22 +1,26 @@
+// Base URL from environment variables for generating absolute URLs
 const baseUrl = `${process.env.NEXT_PUBLIC_SITE_DOMAIN}`;
 
+/**
+ * Metadata generator functions for various pages
+ * These functions generate SEO-optimized metadata including Open Graph and Twitter cards
+ * Follow best practices for title lengths, descriptions, and image dimensions
+ */
+
+/**
+ * Generates metadata for the home page
+ * Title optimized for 60 characters max (Source: https://socialsharepreview.com/)
+ * Description between 55-200 characters (Source: https://socialsharepreview.com/)
+ */
 export function generateHomePageMetadata() {
   return {
-    // title should not be longer than 60 characters. Source: https://socialsharepreview.com/
     title: "Welcome to OneStopShop - Shopping Made Easier",
-    // title: {
-    //   default: "Welcome to OneStopShop",
-    //   template: "%s - Shopping Made Easier"
-    // },
-
-    // description should be between 55 and 200 characters long, with a maximum of 300. Source: https://socialsharepreview.com/
     description: "Shop the best products at affordable prices.",
     openGraph: {
       title: "Welcome to My E-Commerce Store",
       description: "Find the best deals and offers on our store.",
       url: baseUrl,
-
-      // The recommended image ratio for an og:image is 1.91:1. The optimal size would be 1200 x 630. Source: https://socialsharepreview.com/
+      // OG image ratio 1.91:1 (1200x630) for optimal display
       images: [
         {
           url: "/homepage-og-image.jpg",
@@ -36,13 +40,18 @@ export function generateHomePageMetadata() {
   };
 }
 
+/**
+ * Generates metadata for privacy policy page
+ * Can be configured to control indexing with robots meta
+ */
 export function generatePrivacyPageMetadata() {
   return {
     title: "Privacy Policy - My E-Commerce Store",
-    //   robots: {
-    //     index: false,
-    //     follow: true,
-    //   }
+    // Optional robots control
+    // robots: {
+    //   index: false,
+    //   follow: true,
+    // }
     description: "Get in touch with us for any queries or support.",
     openGraph: {
       title: "Privacy Policy - My E-Commerce Store",
@@ -67,6 +76,10 @@ export function generatePrivacyPageMetadata() {
   };
 }
 
+/**
+ * Generates metadata for product listing page
+ * Optimized for product discovery and SEO
+ */
 export function generateProductListingMetadata() {
   return {
     title: "Products - My E-Commerce Store",
@@ -94,6 +107,10 @@ export function generateProductListingMetadata() {
   };
 }
 
+/**
+ * Generates dynamic metadata for individual product pages
+ * Uses product data to create unique meta descriptions and titles
+ */
 export async function generateProductDetailMetadata(product: any) {
   return {
     title: `${product.title} | OneStopShop - Shopping Made Easier`,
@@ -121,6 +138,32 @@ export async function generateProductDetailMetadata(product: any) {
   };
 }
 
+/**
+ * Generates metadata for category pages
+ * Formats category names and creates breadcrumb-style titles
+ */
+export function generateCategoryMetadata(category: string) {
+  // Format category name for display (e.g., "mens/shoes" -> "Mens > Shoes")
+  const formattedCategory = category
+    .split("/")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" > ");
+
+  return {
+    title: `${formattedCategory} - My E-Commerce Store`,
+    description: `Browse our collection of ${category} products.`,
+    openGraph: {
+      title: `${formattedCategory} - My E-Commerce Store`,
+      description: `Browse our collection of ${category} products.`,
+      type: "website"
+    }
+  };
+}
+
+/**
+ * Generates metadata for cart page
+ * Non-indexable by default as it's a user-specific page
+ */
 export function generateCartPageMetadata() {
   return {
     title: "Cart - My E-Commerce Store",
@@ -147,6 +190,11 @@ export function generateCartPageMetadata() {
     }
   };
 }
+
+/**
+ * Generates metadata for checkout page
+ * Should be non-indexable and include nofollow directives
+ */
 export function generateCheckouttPageMetadata() {
   return {
     title: "Checkout - My E-Commerce Store",
@@ -173,6 +221,11 @@ export function generateCheckouttPageMetadata() {
     }
   };
 }
+
+/**
+ * Generates metadata for payment success page
+ * Should be non-indexable and include nofollow directives
+ */
 export function generatePaymentSuccesstPageMetadata() {
   return {
     title: "Payment Success - My E-Commerce Store",
@@ -199,6 +252,11 @@ export function generatePaymentSuccesstPageMetadata() {
     }
   };
 }
+
+/**
+ * Generates metadata for about page
+ * Includes company information and mission statement
+ */
 export function generateAboutPageMetadata() {
   return {
     title: "About Us - My E-Commerce Store",
@@ -226,6 +284,10 @@ export function generateAboutPageMetadata() {
   };
 }
 
+/**
+ * Generates metadata for contact page
+ * Includes contact information and support details
+ */
 export function generateContactPageMetadata() {
   return {
     title: "Contact Us - My E-Commerce Store",

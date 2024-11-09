@@ -1,20 +1,34 @@
-import { shopify, shopifyAdmin } from "@/lib/shopify";
+// import { shopify, shopifyAdmin } from "@/lib/shopify";
+import { shopify } from "@/lib/shopify/client";
 
+// Fetches all products from Shopify
+// Note: Currently fetches all products at once - consider implementing cursor-based pagination
+// for large catalogs to improve performance
+// @param page - Page number (currently unused, handled by API route)
+// @param limit - Products per page (currently unused, handled by API route)
 export async function fetchProducts(page = 1, limit = 20) {
   try {
-    // const products = await shopify.product.fetchQuery(options);
-    const products = await shopify.product.fetchAll(limit * page);
+    // Fetch complete product catalog
+    const products = await shopify.product.fetchAll();
+
     if (!products) {
-      return null;
+      return [];
     }
+
+    // Debugging log for monitoring data volume
+    // console.log("Total products from Shopify:", products.length);
+
+    // Return full product list for API route to handle pagination
     return products;
   } catch (error) {
     console.error("Error fetching products:", error);
-    // throw error; // Re-throw the error for proper handling in the calling component
     return [];
   }
 }
 
+// Retrieves a single product by its handle (slug)
+// @param handle - Product's unique handle/slug identifier
+// @returns Product object or null if not found
 export async function fetchProduct(handle: string) {
   try {
     const product = await shopify.product.fetchByHandle(handle);
@@ -28,19 +42,17 @@ export async function fetchProduct(handle: string) {
   }
 }
 
+// Fetches most recent products
+// Uses simple array slicing for limitation
+// @param limit - Maximum number of products to return (default: 6)
+// @returns Array of latest products or null if fetch fails
 export async function fetchLatestProducts(limit = 6) {
-  //   return shopify.product.fetchAll({
-  //     first: limit,
-  //     sortKey: "CREATED_AT",
-  //     reverse: true
-  //   });
   try {
     const products = await shopify.product.fetchAll();
     if (!products) {
       return null;
     }
     const latestProducts = products.slice(0, limit);
-    // return NextResponse.json(latestProducts);
     return latestProducts;
   } catch (error) {
     console.error("Error fetching latest products", error);
@@ -48,6 +60,8 @@ export async function fetchLatestProducts(limit = 6) {
   }
 }
 
+// Retrieves all collections (categories) with their associated products
+// @returns Array of collections or null if fetch fails
 export async function fetchCategories() {
   const collections = await shopify.collection.fetchAllWithProducts();
   if (!collections) {
@@ -56,61 +70,70 @@ export async function fetchCategories() {
   return collections;
 }
 
+// Fetches products from a specific category for homepage display
+// @param category - Category name to filter by (case-insensitive)
+// @param limit - Maximum number of products to return (default: 10)
+// @returns Array of products in the category or null if not found
 export async function fetchHomeProductsbyCategory(
   category: string,
   limit = 10
 ) {
-  // const collection = await shopify.collection.fetchWithProducts(categoryId, {
-  //   productsFirst: limit
-  // });
-  // const collection = await shopify.product.fetchQuery({
-  //   query: category ? `product_type:${category}` : ""
-  // });
   try {
+    // Fetch all collections with their products
     const collections = await shopify.collection.fetchAllWithProducts();
     if (!collections) {
       return null;
     }
+
+    // Find matching collection by name (case-insensitive)
     const collection = collections.find(
       (col) => col.title.toLowerCase() === category
     );
     if (!collection) {
       return null;
     }
+
     return collection.products;
   } catch (error) {
     console.error("Error fetching latest products", error);
     throw error;
   }
 }
-// export async function fetchCategoryProducts(lastCategory: string, limit = 10) {
-//   // const collection = await shopify.collection.fetchWithProducts(categoryId, {
-//   //   productsFirst: limit
-//   // });
-//   const collection = await shopify.product.fetchQuery({
-//     query: `product_type:${lastCategory}`
-//     // query: lastCategory ? `product_type:${lastCategory}` : ""
-//   });
-//   return collection;
-//   // return collection.products;
-// }
 
+// Fetches products by category slug
+// Handles nested category paths and returns existence status
+// @param slug - Category path (can be nested, e.g., "parent/child")
+// @returns Object with existence flag and products array
 export const fetchProductsByCategory = async (slug: string) => {
-  const categories = slug.split("/");
-  const targetCategory = categories[categories.length - 1].toLowerCase();
+  try {
+    // Extract target category from potentially nested path
+    const categories = slug.split("/");
+    const targetCategory = categories[categories.length - 1].toLowerCase();
 
-  // Fetch all collections and filter by targetCategory
-  const collections = await shopify.collection.fetchAllWithProducts();
-  if (!collections) {
-    return null;
+    // Fetch and filter collections by target category
+    const collections = await shopify.collection.fetchAllWithProducts();
+    if (!collections) {
+      return { exists: false, products: [] };
+    }
+
+    // Find matching collection (case-insensitive)
+    const collection = collections.find(
+      (col) => col.title.toLowerCase() === targetCategory
+    );
+
+    // Handle non-existent category
+    if (!collection) {
+      return { exists: false, products: [] };
+    }
+
+    // Return products with existence flag
+    return { exists: true, products: collection.products || [] };
+  } catch (error) {
+    console.error("Error fetching products by category:", error);
+    throw error;
   }
-  const collection = collections.find(
-    (col) => col.title.toLowerCase() === targetCategory
-  );
-
-  if (!collection) {
-    return null;
-  }
-
-  return collection.products;
 };
+
+/*  Note: Consider implementing cursor-based pagination for large catalogs
+ * and caching frequently accessed data to improve performance.
+ */
