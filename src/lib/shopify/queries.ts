@@ -1,5 +1,6 @@
 import { gql } from "graphql-request";
 
+
 // Fetches cart details by ID
 // Used to retrieve current cart state including items, quantities, and costs
 // Required param: cartId - The unique identifier for the cart

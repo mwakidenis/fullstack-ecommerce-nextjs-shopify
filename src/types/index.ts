@@ -32,8 +32,8 @@ export interface ProductProps {
 export interface ProductVariant {
   id: string; // Unique variant identifier
   title: string; // Variant name (e.g., "Small", "Blue")
-  price: string; // Current price
-  compareAtPrice: string | null; // Original/compare-at price
+  price: Money; // Current price
+  compareAtPrice: Money | null; // Original/compare-at price
   inventoryQuantity: number; // Stock level
   weight: number; // Product weight
   weightUnit: "kg" | "g" | "lb" | "oz"; // Weight unit
@@ -41,6 +41,10 @@ export interface ProductVariant {
   requiresShipping: boolean; // Needs shipping
   barcode: string; // SKU/Barcode
   available: boolean; // In stock status
+  image?: {
+    url: string;
+    altText: string;
+  };
 }
 
 // Product option interface
@@ -127,7 +131,40 @@ export interface Cart {
     totalAmount: Money; // Final amount
     totalTaxAmount: Money; // Tax amount
   };
-  lines: CartItem[]; // Array of cart items
+  // lines: CartItem[]; // Array of cart items
+  lines: {
+    edges: {
+      node: CartItem;
+    }[];
+  };
+}
+
+export interface GetCartResponse {
+  cart: Cart;
+}
+
+export interface CreateCartResponse {
+  cartCreate: {
+    cart: Cart;
+  };
+}
+
+export interface CartLinesAddResponse {
+  cartLinesAdd: {
+    cart: Cart;
+  };
+}
+
+export interface CartLinesUpdateResponse {
+  cartLinesUpdate: {
+    cart: Cart;
+  };
+}
+
+export interface CartLinesRemoveResponse {
+  cartLinesRemove: {
+    cart: Cart;
+  };
 }
 
 // Shipping information type

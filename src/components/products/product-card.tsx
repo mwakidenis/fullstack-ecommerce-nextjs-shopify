@@ -158,7 +158,7 @@ const ProductCard = memo(function ProductCard({
         <Link href={`/product/${product.handle}`}>
           <div className="relative aspect-square overflow-hidden">
             <Image
-              src={selectedVariant.image?.src || product.images[0].src}
+              src={selectedVariant.image?.url || product.images[0].src}
               alt={product.title}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-110"
@@ -191,26 +191,27 @@ const ProductCard = memo(function ProductCard({
 
           {/* Variant Selector - Only shown if product has multiple variants */}
           {product.variants.length > 1 && (
-            <Select
-              value={selectedVariant.id}
-              onValueChange={(value) => {
-                const variant = product.variants.find((v) => v.id === value);
-                if (variant) setSelectedVariant(variant);
-              }}
-              className="mt-3"
-            >
-              <SelectTrigger className="h-8">
-                <SelectValue placeholder="Select variant" />
-              </SelectTrigger>
-              <SelectContent>
-                {product.variants.map((variant) => (
-                  <SelectItem key={variant.id} value={variant.id}>
-                    {variant.title} - $
-                    {parseFloat(variant.price.amount).toFixed(2)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="mt-3">
+              <Select
+                value={selectedVariant.id}
+                onValueChange={(value) => {
+                  const variant = product.variants.find((v) => v.id === value);
+                  if (variant) setSelectedVariant(variant);
+                }}
+              >
+                <SelectTrigger className="h-8">
+                  <SelectValue placeholder="Select variant" />
+                </SelectTrigger>
+                <SelectContent>
+                  {product.variants.map((variant) => (
+                    <SelectItem key={variant.id} value={variant.id}>
+                      {variant.title} - $
+                      {parseFloat(variant.price.amount).toFixed(2)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           )}
 
           {/* Price Display */}

@@ -8,6 +8,13 @@ import {
   REMOVE_FROM_CART,
   GET_CART
 } from "@/lib/shopify/queries";
+import {
+  GetCartResponse,
+  CreateCartResponse,
+  CartLinesAddResponse,
+  CartLinesUpdateResponse,
+  CartLinesRemoveResponse
+} from "@/types";
 import { cookies } from "next/headers";
 
 /**
@@ -33,7 +40,10 @@ export async function GET() {
     }
 
     // Fetch current cart data from Shopify using GraphQL
-    const { cart } = await graphqlClient.request(GET_CART, { cartId });
+    // const { cart } = await graphqlClient.request(GET_CART, { cartId });
+    const { cart } = await graphqlClient.request<GetCartResponse>(GET_CART, {
+      cartId
+    });
 
     // Transform the Shopify cart data into a simplified structure
     // This makes it easier to work with in the frontend
@@ -51,7 +61,7 @@ export async function GET() {
           price: node.merchandise.price,
           product: {
             title: node.merchandise.product.title,
-            image: node.merchandise.product.images.edges[0]?.node
+            image: node.merchandise.product.image
           }
         }
       }))
@@ -85,7 +95,7 @@ export async function POST(req: Request) {
       };
 
       // Create new cart using Shopify's GraphQL API
-      const { cartCreate } = await graphqlClient.request(
+      const { cartCreate } = await graphqlClient.request<CreateCartResponse>(
         CREATE_CART,
         variables
       );
@@ -116,7 +126,7 @@ export async function POST(req: Request) {
       ]
     };
 
-    const { cartLinesAdd } = await graphqlClient.request(
+    const { cartLinesAdd } = await graphqlClient.request<CartLinesAddResponse>(
       ADD_TO_CART,
       variables
     );
@@ -151,10 +161,11 @@ export async function PUT(req: Request) {
     };
 
     // Update cart using Shopify's GraphQL API
-    const { cartLinesUpdate } = await graphqlClient.request(
-      UPDATE_CART,
-      variables
-    );
+    const { cartLinesUpdate } =
+      await graphqlClient.request<CartLinesUpdateResponse>(
+        UPDATE_CART,
+        variables
+      );
     return NextResponse.json(cartLinesUpdate.cart);
   } catch (error) {
     console.error("Failed to update cart:", error);
@@ -181,10 +192,11 @@ export async function DELETE(req: Request) {
     };
 
     // Remove items using Shopify's GraphQL API
-    const { cartLinesRemove } = await graphqlClient.request(
-      REMOVE_FROM_CART,
-      variables
-    );
+    const { cartLinesRemove } =
+      await graphqlClient.request<CartLinesRemoveResponse>(
+        REMOVE_FROM_CART,
+        variables
+      );
     return NextResponse.json(cartLinesRemove.cart);
   } catch (error) {
     console.error("Failed to remove item from cart:", error);
