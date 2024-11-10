@@ -6,6 +6,7 @@ import Link from "next/link";
 import { calculateTotalCartAmount } from "@/lib/utils";
 import Loader from "@/components/layouts/loader";
 import { showToast } from "@/lib/utils/toast";
+import Image from "next/image";
 
 export default function Cart() {
   // Get cart state and methods from context
@@ -56,8 +57,8 @@ export default function Cart() {
   const cartItems = cart?.lines?.edges
     ? cart.lines.edges.map(normalizeCartItem)
     : Array.isArray(cart?.lines)
-    ? cart.lines.map(normalizeCartItem)
-    : [];
+      ? cart.lines.map(normalizeCartItem)
+      : [];
 
   // Show loading state while cart data is being fetched
   if (isLoading) {
@@ -70,7 +71,7 @@ export default function Cart() {
       <div className="max-w-4xl mx-auto p-4 min-h-[60vh] flex flex-col items-center justify-center">
         <h1 className="text-2xl font-bold mb-4">Your Cart is Empty</h1>
         <p className="text-gray-600 mb-8">
-          Looks like you haven't added anything to your cart yet.
+          Looks like you haven&apos;t added anything to your cart yet.
         </p>
         <Link
           href="/"
@@ -145,12 +146,14 @@ export default function Cart() {
                       <div className="flex items-start">
                         {image?.url && (
                           <div className="flex-shrink-0 h-16 w-16">
-                            <img
+                            <Image
                               className="h-16 w-16 object-cover rounded"
                               src={image.url}
                               alt={
                                 image.altText || productTitle || "Product image"
                               }
+                              width={400}
+                              height={400}
                             />
                           </div>
                         )}

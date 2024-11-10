@@ -22,11 +22,11 @@ const shopify = Client.buildClient({
 // Used for advanced operations like inventory management and order processing
 // Requires admin access token with appropriate permissions
 // Uncomment when admin operations are needed
-// const shopifyAdmin = createAdminApiClient({
-//   storeDomain: endpoint || "",
-//   apiVersion: LATEST_API_VERSION,
-//   accessToken: admin_access_token || ""
-// });
+const shopifyAdmin = createAdminApiClient({
+  storeDomain: endpoint || "",
+  apiVersion: LATEST_API_VERSION,
+  accessToken: admin_access_token || ""
+});
 
 // Initialize raw GraphQL client for custom queries
 // Useful for specific storefront operations not covered by the Buy SDK
@@ -41,4 +41,4 @@ const graphqlClient = new GraphQLClient(
   }
 );
 
-export { shopify, graphqlClient };
+export { shopify, shopifyAdmin, graphqlClient };

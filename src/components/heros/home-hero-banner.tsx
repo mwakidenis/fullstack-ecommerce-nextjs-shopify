@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -44,29 +44,29 @@ export function HomeHeroBanner() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  // Handle next slide transition
-  const nextSlide = () => {
+  // Memoize the nextSlide function
+  const nextSlide = useCallback(() => {
     if (!isAnimating) {
       setIsAnimating(true);
       setCurrentSlide((prev) => (prev + 1) % bannerData.length);
     }
-  };
+  }, [isAnimating]);
 
-  // Handle previous slide transition
-  const prevSlide = () => {
+  // Memoize the prevSlide function
+  const prevSlide = useCallback(() => {
     if (!isAnimating) {
       setIsAnimating(true);
       setCurrentSlide(
         (prev) => (prev - 1 + bannerData.length) % bannerData.length
       );
     }
-  };
+  }, [isAnimating]);
 
   // Set up auto-advance timer
   useEffect(() => {
     const timer = setInterval(nextSlide, 5000); // Change slide every 5 seconds
     return () => clearInterval(timer);
-  }, []);
+  }, [nextSlide]);
 
   // Handle animation cooldown
   useEffect(() => {
@@ -88,8 +88,8 @@ export function HomeHeroBanner() {
               index === currentSlide
                 ? "translate-x-0"
                 : index < currentSlide
-                ? "-translate-x-full"
-                : "translate-x-full"
+                  ? "-translate-x-full"
+                  : "translate-x-full"
             )}
           >
             {/* Slide background with overlay */}

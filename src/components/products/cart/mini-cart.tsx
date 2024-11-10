@@ -1,5 +1,6 @@
 import { useCart } from "@/hooks/cart/use-cart";
 import { formatPrice } from "@/lib/utils";
+import Image from "next/image";
 
 export default function MiniCart() {
   // Get cart state and management functions from custom hook
@@ -24,10 +25,12 @@ export default function MiniCart() {
             <div className="flex items-center gap-4">
               {/* Product image - only shown if available */}
               {item.merchandise.image && (
-                <img
+                <Image
                   src={item.merchandise.image.url}
                   alt={item.merchandise.image.altText || ""}
                   className="w-16 h-16 object-cover"
+                  width={400}
+                  height={400}
                 />
               )}
               {/* Product details */}

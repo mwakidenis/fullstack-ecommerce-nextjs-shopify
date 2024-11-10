@@ -27,8 +27,8 @@ export const CartSummary = () => {
   const cartItems = cart?.lines?.edges
     ? cart.lines.edges.map(normalizeCartItem)
     : Array.isArray(cart?.lines)
-    ? cart.lines.map(normalizeCartItem)
-    : [];
+      ? cart.lines.map(normalizeCartItem)
+      : [];
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg">

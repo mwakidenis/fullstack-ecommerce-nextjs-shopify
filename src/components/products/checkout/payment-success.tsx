@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useCartContext } from "@/providers/cart-context";
 import Loader from "@/components/layouts/loader";
 import { showToast } from "@/lib/utils/toast";
+import Link from "next/link";
 
 export default function PaymentSuccess() {
   // Get cart context functions for cleanup after successful payment
@@ -73,7 +74,7 @@ export default function PaymentSuccess() {
     };
 
     fetchPaymentDetails();
-  }, [searchParams, router]);
+  }, [searchParams, router, clearCart]);
 
   // Show loading state while verifying payment
   if (!isFetched) {
@@ -96,12 +97,12 @@ export default function PaymentSuccess() {
       <p className="text-gray-600">A receipt has been sent to your email.</p>
 
       {/* Return to shopping link */}
-      <a
+      <Link
         href="/"
         className="inline-block bg-blue-600 text-white px-6 py-3 rounded-md mt-6 hover:bg-blue-700 transition-colors"
       >
         Continue Shopping
-      </a>
+      </Link>
     </div>
   );
 }

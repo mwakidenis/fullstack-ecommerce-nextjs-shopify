@@ -13,17 +13,21 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+import { mount } from "cypress/react";
+import "@testing-library/cypress/add-commands";
+
 // Import commands.js using ES2015 syntax:
-import './commands'
+import "./commands";
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
 declare global {
-    namespace Cypress {
-      interface Chainable {
-        // Add custom commands here
-        // login(email: string, password: string): Chainable<void>
-      }
+  namespace Cypress {
+    interface Chainable {
+      mount: typeof mount;
     }
   }
+}
+
+Cypress.Commands.add("mount", mount);

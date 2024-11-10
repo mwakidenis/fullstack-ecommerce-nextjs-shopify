@@ -86,6 +86,7 @@ const AddToCartButton = memo(function AddToCartButton({
           className="h-9 w-9 rounded-none"
           onClick={() => updateQuantity(quantity - 1)}
           disabled={quantity <= 1}
+          aria-label="Decrease quantity"
         >
           <Minus className="h-4 w-4" />
         </Button>
@@ -104,6 +105,7 @@ const AddToCartButton = memo(function AddToCartButton({
           className="h-9 w-9 rounded-none"
           onClick={() => updateQuantity(quantity + 1)}
           disabled={quantity >= maxQuantity}
+          aria-label="Increase quantity"
         >
           <Plus className="h-4 w-4" />
         </Button>
