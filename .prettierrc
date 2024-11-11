@@ -4,5 +4,8 @@
   "printWidth": 80,
   "tabWidth": 2,
   "trailingComma": "none",
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "parser": "typescript",
+  "endOfLine": "lf"
 }

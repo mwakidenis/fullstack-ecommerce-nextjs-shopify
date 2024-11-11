@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
 
   try {
     let products: ProductProps[];
-    let categoryExists = true;
+    // let categoryExists = true;
 
     // Handle single product fetch by handle
     if (handle) {

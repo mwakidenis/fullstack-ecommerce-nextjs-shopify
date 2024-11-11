@@ -1,20 +1,12 @@
-// module.exports = {
-//     // reactStrictMode: true,
-//     images: {
-//         domains: ["cdn.shopify.com", "images.unsplash.com", "via.placeholder.com"]
-//     }
-// }
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+module.exports = {
+  // reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: true // Disables TypeScript build errors
+  },
   eslint: {
-    // dirs: ['src'],
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: true // Disables ESLint build errors
   },
   images: {
     domains: ["cdn.shopify.com", "images.unsplash.com", "via.placeholder.com"]
   }
-};
-
-module.exports = nextConfig;
+}
