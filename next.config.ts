@@ -1,5 +1,4 @@
-module.exports = {
-  // reactStrictMode: true,
+const nextConfig = {
   typescript: {
     ignoreBuildErrors: true // Disables TypeScript build errors
   },
@@ -9,4 +8,6 @@ module.exports = {
   images: {
     domains: ["cdn.shopify.com", "images.unsplash.com", "via.placeholder.com"]
   }
-}
+};
+
+export default nextConfig;
