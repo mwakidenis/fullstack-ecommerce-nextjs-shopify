@@ -183,3 +183,17 @@ export type ShippingDetails = {
   postalCode: string; // ZIP/postal code
   country: string; // Country
 };
+
+export interface NavItem {
+  title: string;
+  url: string;
+}
+
+export interface Category {
+  title: string;
+  handle: string;
+}
+
+export interface NavbarProps {
+  active: number;
+}

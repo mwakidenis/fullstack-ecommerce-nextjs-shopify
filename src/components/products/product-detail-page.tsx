@@ -17,22 +17,14 @@ import AddToCartButton from "./cart/add-to-cart-button";
 import { Badge } from "../ui/badge";
 
 interface ProductDetailProps {
-  product: ProductProps; // Complete product data including variants and images
+  product: ProductProps;
 }
 
-/**
- * Product detail page component displaying comprehensive product information
- * Includes image gallery, variant selection, pricing, and detailed product information
- */
 const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
-  // State for selected variant and image
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
   const [selectedImage, setSelectedImage] = useState(product.images[0]);
 
-  /**
-   * Calculate price ranges and variations across all product variants
-   * Used for displaying price ranges when product has multiple variants
-   */
+  // Existing price calculation logic remains the same
   const priceRanges = useMemo(() => {
     const prices = product.variants.map((v) => parseFloat(v.price.amount));
     const comparePrices = product.variants
@@ -52,32 +44,14 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
     };
   }, [product.variants]);
 
-  // Check if selected variant has a discount price
-  let hasDiscount = null;
-  if (selectedVariant.compareAtPrice !== null) {
-    hasDiscount = selectedVariant.compareAtPrice.amount;
-  }
+  let hasDiscount = selectedVariant.compareAtPrice?.amount ?? null;
 
-  /**
-   * Calculate discount percentage between original and sale price
-   * @param price - Current price
-   * @param comparePrice - Original price to compare against
-   * @returns Discount percentage or null if no discount
-   */
   const calculateDiscount = (price: number, comparePrice: number | null) => {
     if (!comparePrice) return null;
     return Math.round(((comparePrice - price) / comparePrice) * 100);
   };
 
-  /**
-   * Price display component handling various pricing scenarios:
-   * - Single variant price
-   * - Price ranges for multiple variants
-   * - Discount displays
-   * - Compare at prices
-   */
   const PriceDisplay = () => {
-    // Display price for selected variant
     if (selectedVariant) {
       const discount = calculateDiscount(
         parseFloat(selectedVariant.price.amount),
@@ -88,12 +62,12 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
 
       return (
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl font-bold">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <span className="text-2xl sm:text-3xl font-bold">
               ${parseFloat(selectedVariant.price.amount).toFixed(2)}
             </span>
             {selectedVariant.compareAtPrice && (
-              <span className="text-xl text-gray-500 line-through">
+              <span className="text-lg sm:text-xl text-gray-500 line-through">
                 ${parseFloat(selectedVariant.compareAtPrice.amount).toFixed(2)}
               </span>
             )}
@@ -112,22 +86,21 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
       );
     }
 
-    // Display price range for multiple variants
     return (
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {priceRanges.hasVariedPrices ? (
-            <span className="text-3xl font-bold">
+            <span className="text-2xl sm:text-3xl font-bold">
               ${priceRanges.minPrice.toFixed(2)} - $
               {priceRanges.maxPrice.toFixed(2)}
             </span>
           ) : (
-            <span className="text-3xl font-bold">
+            <span className="text-2xl sm:text-3xl font-bold">
               ${priceRanges.minPrice.toFixed(2)}
             </span>
           )}
           {priceRanges.minComparePrice && (
-            <span className="text-xl text-gray-500 line-through">
+            <span className="text-lg sm:text-xl text-gray-500 line-through">
               ${priceRanges.minComparePrice.toFixed(2)}
               {priceRanges.maxComparePrice &&
                 priceRanges.maxComparePrice !== priceRanges.minComparePrice &&
@@ -145,10 +118,10 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="grid gap-8 lg:grid-cols-2">
+    <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-8 lg:px-8">
+      <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
         {/* Image Gallery Section */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Main product image */}
           <div className="relative aspect-square overflow-hidden rounded-lg">
             <Image
@@ -160,7 +133,7 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
             />
           </div>
           {/* Thumbnail gallery */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-4 gap-2 sm:gap-4">
             {product.images.map((image) => (
               <div
                 key={image.id}
@@ -183,16 +156,16 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
         </div>
 
         {/* Product Information Section */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Title and Price */}
-          <div className="space-y-4">
-            <h1 className="text-3xl font-bold">{product.title}</h1>
+          <div className="space-y-3 sm:space-y-4">
+            <h1 className="text-2xl sm:text-3xl font-bold">{product.title}</h1>
             <PriceDisplay />
           </div>
 
           {/* Product Options Section */}
           <div className="space-y-4">
-            {/* Variant Selection Dropdown */}
+            {/* Variant Selection */}
             <div>
               <label className="mb-2 block text-sm font-medium">
                 Select Variant
@@ -224,29 +197,35 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
               </Select>
             </div>
 
-            {/* Action Buttons Group */}
-            <div className="flex gap-4">
-              <AddToCartButton
-                variantId={selectedVariant.id}
-                availableForSale={selectedVariant.available}
-                maxQuantity={selectedVariant.inventoryQuantity}
-                productTitle={product.title}
-              />
-              <Button size="lg" variant="outline">
-                <Heart className="h-5 w-5" />
-              </Button>
-              <Button size="lg" variant="outline">
-                <Share2 className="h-5 w-5" />
-              </Button>
+            {/* Action Buttons */}
+            <div className="flex flex-wrap gap-3 sm:gap-4">
+              <div className="w-full sm:w-auto">
+                <AddToCartButton
+                  variantId={selectedVariant.id}
+                  availableForSale={selectedVariant.available}
+                  maxQuantity={selectedVariant.inventoryQuantity}
+                  productTitle={product.title}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button size="lg" variant="outline">
+                  <Heart className="h-5 w-5" />
+                </Button>
+                <Button size="lg" variant="outline">
+                  <Share2 className="h-5 w-5" />
+                </Button>
+              </div>
             </div>
 
-            {/* Shipping Information Card */}
+            {/* Shipping Card */}
             <Card>
-              <CardContent className="flex items-center gap-4 p-4">
-                <Truck className="h-8 w-8 text-gray-400" />
+              <CardContent className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">
+                <Truck className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
                 <div>
-                  <h3 className="font-medium">Free Shipping</h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="text-sm sm:text-base font-medium">
+                    Free Shipping
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Free standard shipping on orders over $100
                   </p>
                 </div>
@@ -255,32 +234,45 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
           </div>
 
           {/* Product Details Tabs */}
-          <Tabs defaultValue="description" className="mt-8">
+          <Tabs defaultValue="description" className="mt-6 sm:mt-8">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="shipping">Shipping</TabsTrigger>
+              <TabsTrigger value="description" className="text-xs sm:text-sm">
+                Description
+              </TabsTrigger>
+              <TabsTrigger
+                value="specifications"
+                className="text-xs sm:text-sm"
+              >
+                Specifications
+              </TabsTrigger>
+              <TabsTrigger value="shipping" className="text-xs sm:text-sm">
+                Shipping
+              </TabsTrigger>
             </TabsList>
             {/* Description Tab */}
-            <TabsContent value="description" className="mt-4">
-              <p className="text-gray-600">{product.description}</p>
+            <TabsContent value="description" className="mt-3 sm:mt-4">
+              <p className="text-sm sm:text-base text-gray-600">
+                {product.description}
+              </p>
             </TabsContent>
             {/* Specifications Tab */}
-            <TabsContent value="specifications" className="mt-4">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-sm font-medium">Brand</div>
-                  <div className="text-sm text-gray-600">{product.vendor}</div>
-                  <div className="text-sm font-medium">Type</div>
-                  <div className="text-sm text-gray-600">
+            <TabsContent value="specifications" className="mt-3 sm:mt-4">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="text-xs sm:text-sm font-medium">Brand</div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    {product.vendor}
+                  </div>
+                  <div className="text-xs sm:text-sm font-medium">Type</div>
+                  <div className="text-xs sm:text-sm text-gray-600">
                     {product.productType}
                   </div>
                 </div>
               </div>
             </TabsContent>
             {/* Shipping Tab */}
-            <TabsContent value="shipping" className="mt-4">
-              <div className="space-y-4 text-sm text-gray-600">
+            <TabsContent value="shipping" className="mt-3 sm:mt-4">
+              <div className="space-y-3 sm:space-y-4 text-xs sm:text-sm text-gray-600">
                 <p>
                   Standard Shipping (5-7 business days): Free on orders over
                   $100

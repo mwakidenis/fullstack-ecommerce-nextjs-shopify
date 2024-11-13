@@ -7,6 +7,7 @@ import { calculateTotalCartAmount } from "@/lib/utils";
 import Loader from "@/components/layouts/loader";
 import { showToast } from "@/lib/utils/toast";
 import Image from "next/image";
+import { X } from "lucide-react";
 
 export default function Cart() {
   // Get cart state and methods from context
@@ -215,7 +216,8 @@ export default function Cart() {
                         disabled={isLoading}
                         className="text-red-600 hover:text-red-900"
                       >
-                        Remove
+                        {/* Remove */}
+                        <X className="w-6 h-6" />
                       </button>
                     </td>
                   </tr>
