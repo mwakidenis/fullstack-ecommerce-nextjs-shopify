@@ -23,6 +23,7 @@ const CheckoutForm = () => {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1); // Track checkout steps
   const [clientSecret, setClientSecret] = useState<string>("");
+  const [showOrderSummary, setShowOrderSummary] = useState(false);
 
   // Redirect to cart if empty
   useEffect(() => {
@@ -77,20 +78,22 @@ const CheckoutForm = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <PaymentElement />
         {error && <div className="text-red-500 text-sm">{error}</div>}
-        <button
-          type="submit"
-          disabled={!stripe || processing}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
-        >
-          {processing ? "Processing..." : "Pay Now"}
-        </button>
-        <button
-          type="button"
-          onClick={() => setStep(1)}
-          className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50"
-        >
-          Back to Shipping Details
-        </button>
+        <div className="flex flex-col gap-3">
+          <button
+            type="submit"
+            disabled={!stripe || processing}
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm md:text-base"
+          >
+            {processing ? "Processing..." : "Pay Now"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setStep(1)}
+            className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-50 text-sm md:text-base"
+          >
+            Back to Shipping Details
+          </button>
+        </div>
       </form>
     );
   };
@@ -154,14 +157,15 @@ const CheckoutForm = () => {
       }
     };
 
+    const inputClassName =
+      "mt-1 block w-full rounded-md border-gray-300 shadow-sm border py-3 px-4 text-sm md:text-base focus:ring-blue-500 focus:border-blue-500";
+    const labelClassName = "block text-sm font-medium text-gray-700 mb-1";
+
     return (
       <form onSubmit={handleShippingSubmit} className="space-y-4">
         {/* Name input field */}
         <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="name" className={labelClassName}>
             Name
           </label>
           <input
@@ -169,7 +173,7 @@ const CheckoutForm = () => {
             name="name"
             type="text"
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border py-2 px-3"
+            className={inputClassName}
             value={shippingDetails.name}
             onChange={handleInputChange}
           />
@@ -177,10 +181,7 @@ const CheckoutForm = () => {
 
         {/* Email input field */}
         <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="email" className={labelClassName}>
             Email
           </label>
           <input
@@ -188,7 +189,7 @@ const CheckoutForm = () => {
             name="email"
             type="email"
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border py-2 px-3"
+            className={inputClassName}
             value={shippingDetails.email}
             onChange={handleInputChange}
           />
@@ -196,10 +197,7 @@ const CheckoutForm = () => {
 
         {/* Address input field */}
         <div>
-          <label
-            htmlFor="address"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="address" className={labelClassName}>
             Address
           </label>
           <input
@@ -207,7 +205,7 @@ const CheckoutForm = () => {
             name="address"
             type="text"
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border py-2 px-3"
+            className={inputClassName}
             value={shippingDetails.address}
             onChange={handleInputChange}
           />
@@ -216,10 +214,7 @@ const CheckoutForm = () => {
         {/* City and State fields */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label
-              htmlFor="city"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="city" className={labelClassName}>
               City
             </label>
             <input
@@ -227,17 +222,14 @@ const CheckoutForm = () => {
               name="city"
               type="text"
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border py-2 px-3"
+              className={inputClassName}
               value={shippingDetails.city}
               onChange={handleInputChange}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="state"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="state" className={labelClassName}>
               State
             </label>
             <input
@@ -245,7 +237,7 @@ const CheckoutForm = () => {
               name="state"
               type="text"
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border py-2 px-3"
+              className={inputClassName}
               value={shippingDetails.state}
               onChange={handleInputChange}
             />
@@ -255,10 +247,7 @@ const CheckoutForm = () => {
         {/* Postal Code and Country fields */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label
-              htmlFor="postalCode"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="postalCode" className={labelClassName}>
               Postal Code
             </label>
             <input
@@ -266,17 +255,14 @@ const CheckoutForm = () => {
               name="postalCode"
               type="text"
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border py-2 px-3"
+              className={inputClassName}
               value={shippingDetails.postalCode}
               onChange={handleInputChange}
             />
           </div>
 
           <div>
-            <label
-              htmlFor="country"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="country" className={labelClassName}>
               Country
             </label>
             <input
@@ -284,7 +270,7 @@ const CheckoutForm = () => {
               name="country"
               type="text"
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm border py-2 px-3"
+              className={inputClassName}
               value={shippingDetails.country}
               onChange={handleInputChange}
             />
@@ -294,7 +280,7 @@ const CheckoutForm = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm md:text-base mt-4"
         >
           {loading ? "Processing..." : "Continue to Payment"}
         </button>
@@ -309,32 +295,41 @@ const CheckoutForm = () => {
 
   // Main checkout layout
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="w-full px-4 md:px-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Mobile Order Summary Toggle */}
+        <button
+          onClick={() => setShowOrderSummary(!showOrderSummary)}
+          className="w-full md:hidden bg-gray-100 p-4 rounded-lg mb-4 flex justify-between items-center"
+        >
+          <span className="font-medium">Order Summary</span>
+          <span className="text-blue-600">
+            {showOrderSummary ? "Hide" : "Show"}
+          </span>
+        </button>
+
+        {/* Cart Summary - Hidden on mobile unless toggled */}
+        <div className={`space-y-6 ${showOrderSummary ? "block" : "hidden"}`}>
+          <CartSummary />
+        </div>
         <div>
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            {/* Progress indicator */}
+          <div className="bg-white rounded-lg shadow-lg p-4 md:p-6">
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <span
-                  className={`text-sm ${
-                    step === 1 ? "text-blue-600 font-medium" : "text-gray-500"
-                  }`}
+                  className={`text-sm ${step === 1 ? "text-blue-600 font-medium" : "text-gray-500"}`}
                 >
                   1. Shipping
                 </span>
                 <span className="text-gray-500">→</span>
                 <span
-                  className={`text-sm ${
-                    step === 2 ? "text-blue-600 font-medium" : "text-gray-500"
-                  }`}
+                  className={`text-sm ${step === 2 ? "text-blue-600 font-medium" : "text-gray-500"}`}
                 >
                   2. Payment
                 </span>
               </div>
             </div>
 
-            {/* Render shipping or payment form based on current step */}
             {step === 1 ? (
               <ShippingForm />
             ) : (
@@ -344,9 +339,7 @@ const CheckoutForm = () => {
             )}
           </div>
         </div>
-
-        {/* Cart summary sidebar */}
-        <div className="space-y-6">
+        <div className={`space-y-6 hidden md:block`}>
           <CartSummary />
         </div>
       </div>

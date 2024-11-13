@@ -92,109 +92,112 @@ export default function Cart() {
       {/* Cart Items Section */}
       <div className="lg:col-span-8">
         <div className="border rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            {/* Table headers for cart items */}
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Product
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Price
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Quantity
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Total
-                </th>
-                <th scope="col" className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            {/* Cart items list */}
-            <tbody className="bg-white divide-y divide-gray-200">
-              {cartItems.map((item: any) => {
-                // Extract and normalize product details from cart item
-                const merchandise = item?.merchandise;
-                const productTitle =
-                  merchandise?.product?.title || merchandise?.title;
-                const variantTitle = merchandise?.title;
-                const image = merchandise?.product?.image || merchandise?.image;
-                const price = merchandise?.price;
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              {/* Table headers for cart items */}
+              <thead className="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    Product
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    Price
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    Quantity
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    Total
+                  </th>
+                  <th
+                    scope="col"
+                    className="relative px-4 sm:px-6 py-3 w-[50px]"
+                  >
+                    <span className="sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              {/* Cart items list */}
+              <tbody className="bg-white divide-y divide-gray-200">
+                {cartItems.map((item: any) => {
+                  // Extract and normalize product details from cart item
+                  const merchandise = item?.merchandise;
+                  const productTitle =
+                    merchandise?.product?.title || merchandise?.title;
+                  const variantTitle = merchandise?.title;
+                  const image =
+                    merchandise?.product?.image || merchandise?.image;
+                  const price = merchandise?.price;
+                  // Calculate individual item total
+                  const itemTotal =
+                    parseFloat(price?.amount || "0") * (item?.quantity || 0);
 
-                // Calculate individual item total
-                const itemTotal =
-                  parseFloat(price?.amount || "0") * (item?.quantity || 0);
-
-                return (
-                  <tr key={item.id}>
-                    {/* Product details cell with image and title */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-start">
-                        {image?.url && (
-                          <div className="flex-shrink-0 h-16 w-16">
-                            <Image
-                              className="h-16 w-16 object-cover rounded"
-                              src={image.url}
-                              alt={
-                                image.altText || productTitle || "Product image"
-                              }
-                              width={400}
-                              height={400}
-                            />
-                          </div>
-                        )}
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 break-words">
-                            {merchandise?.product?.title || "Product"}
-                          </div>
-                          {/* Show variant title if different from product title */}
-                          {merchandise?.title &&
-                            merchandise.title !==
-                              merchandise?.product?.title && (
-                              <div className="text-sm text-gray-500 break-words">
-                                ({merchandise.title})
+                  return (
+                    <tr key={item.id}>
+                      {/* Product details cell with image and title */}
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          {image?.url && (
+                            <div className="flex-shrink-0 h-12 w-12 sm:h-16 sm:w-16">
+                              <Image
+                                className="h-12 w-12 sm:h-16 sm:w-16 object-cover rounded"
+                                src={image.url}
+                                alt={
+                                  image.altText ||
+                                  productTitle ||
+                                  "Product image"
+                                }
+                                width={400}
+                                height={400}
+                              />
+                            </div>
+                          )}
+                          <div className="ml-3 sm:ml-4">
+                            <div className="text-xs sm:text-sm font-medium text-gray-900 max-w-[120px] sm:max-w-[200px] truncate">
+                              {productTitle}
+                            </div>
+                            {/* Show variant title if different from product title */}
+                            {variantTitle && variantTitle !== productTitle && (
+                              <div className="text-xs sm:text-sm text-gray-500 max-w-[120px] sm:max-w-[200px] truncate">
+                                ({variantTitle})
                               </div>
                             )}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    {/* Unit price cell */}
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
-                        {formatPrice(
-                          parseFloat(price?.amount || "0"),
-                          price?.currencyCode
-                        )}
-                      </div>
-                    </td>
-                    {/* Quantity selector */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
+                      </td>
+                      {/* Unit price cell */}
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                        <div className="text-xs sm:text-sm text-gray-900">
+                          {formatPrice(
+                            parseFloat(price?.amount || "0"),
+                            price?.currencyCode
+                          )}
+                        </div>
+                      </td>
+                      {/* Quantity selector */}
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                         <select
                           value={item.quantity}
                           onChange={(e) =>
                             handleUpdateQuantity(
                               item.id,
                               Number(e.target.value),
-                              merchandise?.product?.title || "Product"
+                              productTitle
                             )
                           }
-                          className="block w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                          className="block w-16 sm:w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-xs sm:text-sm"
                           disabled={isLoading}
                         >
                           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
@@ -203,46 +206,46 @@ export default function Cart() {
                             </option>
                           ))}
                         </select>
-                      </div>
-                    </td>
-                    {/* Item total price */}
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {formatPrice(itemTotal, price?.currencyCode)}
-                    </td>
-                    {/* Remove item button */}
-                    <td className="px-6 py-4 text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleRemoveItem(item.id, productTitle)}
-                        disabled={isLoading}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        {/* Remove */}
-                        <X className="w-6 h-6" />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      {/* Item total price */}
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                        {formatPrice(itemTotal, price?.currencyCode)}
+                      </td>
+                      {/* Remove item button */}
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
+                        <button
+                          onClick={() =>
+                            handleRemoveItem(item.id, productTitle)
+                          }
+                          disabled={isLoading}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Order Summary Section */}
       <div className="lg:col-span-4 mt-8 lg:mt-0">
-        <div className="border rounded-lg p-6 space-y-4 bg-gray-50">
-          <h2 className="text-lg font-medium">Order Summary</h2>
+        <div className="border rounded-lg p-4 sm:p-6 space-y-4 bg-gray-50">
+          <h2 className="text-base sm:text-lg font-medium">Order Summary</h2>
 
           {/* Price breakdown */}
           <div className="space-y-2">
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-xs sm:text-sm">
               <span>Subtotal</span>
               <span>
                 {formatPrice(subtotal, cart.cost.subtotalAmount.currencyCode)}
               </span>
             </div>
-
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-xs sm:text-sm">
               <span>Shipping</span>
               <span>
                 {shipping === 0
@@ -253,8 +256,7 @@ export default function Cart() {
                     )}
               </span>
             </div>
-
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-xs sm:text-sm">
               <span>Tax</span>
               <span>
                 {formatPrice(tax, cart.cost.subtotalAmount.currencyCode)}
@@ -262,26 +264,24 @@ export default function Cart() {
             </div>
 
             {/* Order total */}
-            <div className="border-t pt-2 flex justify-between font-medium">
+            <div className="border-t pt-2 flex justify-between font-medium text-sm sm:text-base">
               <span>Order total</span>
               <span>
                 {formatPrice(total, cart.cost.totalAmount.currencyCode)}
               </span>
             </div>
           </div>
-
           {/* Action buttons */}
           <div className="space-y-3">
             <Link
-              href={"/checkout"}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
+              href="/checkout"
+              className="w-full bg-blue-600 text-white py-2 sm:py-3 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center text-sm sm:text-base"
             >
               Proceed to Checkout
             </Link>
-
             <Link
               href="/"
-              className="w-full bg-white text-gray-600 py-3 px-4 rounded-md border hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
+              className="w-full bg-white text-gray-600 py-2 sm:py-3 px-4 rounded-md border hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center text-sm sm:text-base"
             >
               Continue Shopping
             </Link>
