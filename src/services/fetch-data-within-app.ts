@@ -84,7 +84,8 @@ export async function getLatestProducts(
     const response = await fetch(
       `${baseUrl}/api/products/latest-products?limit=${count}`,
       {
-        cache: "no-store",
+        cache: "force-cache", // or 'no-store' if you always need fresh data
+        next: { revalidate: 3600 }, // revalidate every hour
         headers: {
           "Content-Type": "application/json"
         }

@@ -48,8 +48,9 @@ export async function GET(request: Request) {
   } catch (error) {
     // Handle any errors during the fetch process
     // Returns a generic error message to avoid exposing internal details
+    console.error("Route error:", error);
     return NextResponse.json(
-      { error: "Error fetching latest products" },
+      { error: "Error fetching latest products", details: error },
       { status: 500 }
     );
   }
