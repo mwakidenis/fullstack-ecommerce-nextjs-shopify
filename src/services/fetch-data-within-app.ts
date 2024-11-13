@@ -68,16 +68,39 @@ export async function getLatestProducts(
   count: number = 5
 ): Promise<ProductProps[]> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_DOMAIN}/api/products/latest-products?limit=${count}`
-    );
-    if (!response.ok) {
-      throw new Error("Failed to fetch latest products");
+    // Add error handling for undefined NEXT_PUBLIC_SITE_DOMAIN
+    if (!process.env.NEXT_PUBLIC_SITE_DOMAIN) {
+      console.warn("NEXT_PUBLIC_SITE_DOMAIN is not defined");
+      return [];
     }
-    return response.json();
+
+    const baseUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.NEXT_PUBLIC_SITE_DOMAIN
+        : "http://localhost:3000";
+
+    console.log("Base URL: ", baseUrl);
+
+    const response = await fetch(
+      `${baseUrl}/api/products/latest-products?limit=${count}`,
+      {
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      console.error("Response not ok:", response.status, response.statusText);
+      return [];
+    }
+
+    const data = await response.json();
+    return data || [];
   } catch (error) {
     console.error("Error fetching latest products", error);
-    throw error;
+    return [];
   }
 }
 

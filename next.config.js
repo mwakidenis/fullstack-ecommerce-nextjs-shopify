@@ -22,6 +22,19 @@ const nextConfig = {
         hostname: "via.placeholder.com"
       }
     ]
+  },
+  async headers() {
+    return [
+      {
+        source: "/api/admin/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, max-age=0"
+          }
+        ]
+      }
+    ];
   }
 };
 

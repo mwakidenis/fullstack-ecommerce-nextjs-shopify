@@ -23,6 +23,20 @@ import integrateWooCommerceToShopify from "@/services/woocommerce/wp-products";
  * depending on the amount of data being migrated
  */
 export async function GET(req: NextRequest) {
+  // Manual trigger query parameter
+  const { searchParams } = new URL(req.url);
+  const shouldImport = searchParams.get("import");
+
+  // Only run import if explicitly triggered
+  if (shouldImport !== "true") {
+    return NextResponse.json(
+      {
+        message: "Import not triggered. Add ?import=true to URL to run import."
+      },
+      { status: 200 }
+    );
+  }
+
   try {
     // Execute the integration process
     const results = await integrateWooCommerceToShopify();
