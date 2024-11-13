@@ -37,11 +37,18 @@ const ProductCard = memo(function ProductCard({
   product: ProductProps;
 }) {
   // State management for component features
-  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(product.variants[0]);
+  // const [selectedVariant, setSelectedVariant] = useState(() => {
+  //   const availableVariant = product.variants.find((v) => v.available);
+  //   return availableVariant || product.variants[0];
+  // });
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(product.images[0]);
   const { addToCart, isLoading } = useCart();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  // Check if any variant is available for sale
+  const hasAvailableVariants = product.variants.some((v) => v.available);
 
   /**
    * Handles adding product to cart
@@ -86,6 +93,8 @@ const ProductCard = memo(function ProductCard({
         : 0
     };
   }, [product.variants, selectedVariant]);
+
+  // console.log("Selected Variant: ", selectedVariant);
 
   /**
    * Reusable price display component
@@ -204,9 +213,18 @@ const ProductCard = memo(function ProductCard({
                 </SelectTrigger>
                 <SelectContent>
                   {product.variants.map((variant) => (
-                    <SelectItem key={variant.id} value={variant.id}>
-                      {variant.title} - $
-                      {parseFloat(variant.price.amount).toFixed(2)}
+                    <SelectItem
+                      key={variant.id}
+                      value={variant.id}
+                      className="flex justify-between"
+                    >
+                      <span>
+                        {variant.title}
+                        {!variant.available && " (Out of Stock)"}
+                      </span>
+                      <span className="ml-4 text-muted-foreground">
+                        ${parseFloat(variant.price.amount).toFixed(2)}
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -304,8 +322,8 @@ const ProductCard = memo(function ProductCard({
                         if (variant) setSelectedVariant(variant);
                       }}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose a variant" />
+                      <SelectTrigger className="h-8">
+                        <SelectValue placeholder="Select variant" />
                       </SelectTrigger>
                       <SelectContent>
                         {product.variants.map((variant) => (
@@ -314,7 +332,10 @@ const ProductCard = memo(function ProductCard({
                             value={variant.id}
                             className="flex justify-between"
                           >
-                            <span>{variant.title}</span>
+                            <span>
+                              {variant.title}
+                              {!variant.available && " (Out of Stock)"}
+                            </span>
                             <span className="ml-4 text-muted-foreground">
                               ${parseFloat(variant.price.amount).toFixed(2)}
                             </span>
@@ -334,6 +355,7 @@ const ProductCard = memo(function ProductCard({
                     variantId={selectedVariant.id}
                     availableForSale={selectedVariant.available}
                     maxQuantity={selectedVariant.inventoryQuantity}
+                    isProductCard={true}
                     productTitle={product.title}
                   />
                   <Link href={`/product/${product.handle}`}>

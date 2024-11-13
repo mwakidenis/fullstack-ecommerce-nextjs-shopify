@@ -15,11 +15,26 @@ export async function fetchProducts(page = 1, limit = 20) {
       return [];
     }
 
-    // Debugging log for monitoring data volume
+    return products.map((product) => {
+      // Ensure variants have availableForSale property
+      const variants = product.variants.map((variant) => ({
+        ...variant,
+        availableForSale: variant.availableForSale, // Buy SDK uses 'available' instead of 'availableForSale'
+        quantityAvailable: variant.quantityAvailable || 0
+      }));
+
+      return {
+        ...product,
+        variants
+      };
+    });
+
+    // Debugging log for monitoring data
     // console.log("Total products from Shopify:", products.length);
+    // console.log("Products from Shopify:", products);
 
     // Return full product list for API route to handle pagination
-    return products;
+    // return products;
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
@@ -35,7 +50,18 @@ export async function fetchProduct(handle: string) {
     if (!product) {
       return null;
     }
-    return product;
+
+    const variants = product.variants.map((variant) => ({
+      ...variant,
+      availableForSale: variant.availableForSale,
+      quantityAvailable: variant.quantityAvailable || 0
+    }));
+
+    return {
+      ...product,
+      variants
+    };
+    // return product;
   } catch (error) {
     console.error("Error fetching product details", error);
     throw error;

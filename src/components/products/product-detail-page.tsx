@@ -129,7 +129,8 @@ const ProductDetailPageComponent = ({ product }: ProductDetailProps) => {
           {priceRanges.minComparePrice && (
             <span className="text-xl text-gray-500 line-through">
               ${priceRanges.minComparePrice.toFixed(2)}
-              {priceRanges.maxComparePrice !== priceRanges.minComparePrice &&
+              {priceRanges.maxComparePrice &&
+                priceRanges.maxComparePrice !== priceRanges.minComparePrice &&
                 ` - $${priceRanges.maxComparePrice.toFixed(2)}`}
             </span>
           )}

@@ -102,7 +102,7 @@ async function createShopifyProduct(
             }
           }
         }
-        `,
+      `,
       {
         variables: {
           input: shopifyProductInput
@@ -110,21 +110,26 @@ async function createShopifyProduct(
       }
     );
 
-    const { productCreate } = response.body;
+    // Check if response exists and has data
+    if (!response || !response.data) {
+      throw new Error("Invalid response from Shopify API");
+    }
+
+    const { data } = response;
 
     // Handle validation errors from Shopify
-    if (productCreate.userErrors.length > 0) {
+    if (data.productCreate.userErrors.length > 0) {
       throw new Error(
-        productCreate.userErrors.map((error) => error.message).join(", ")
+        data.productCreate.userErrors.map((error) => error.message).join(", ")
       );
     }
 
     // Handle unexpected response structure
-    if (!productCreate.product) {
+    if (!data.productCreate.product) {
       throw new Error("Product creation failed without specific errors");
     }
 
-    return productCreate.product;
+    return data.productCreate.product;
   } catch (error) {
     console.error("Error creating Shopify product:", error);
     throw error;

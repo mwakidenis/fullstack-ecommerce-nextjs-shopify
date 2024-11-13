@@ -10,6 +10,6 @@ export const StripeConnection = new Stripe(
     // Using specific API version to ensure stability
     // Update this periodically to access new features
     // Reference: https://stripe.com/docs/api/versioning
-    apiVersion: "2023-08-16"
+    apiVersion: "2024-10-28.acacia"
   }
 );

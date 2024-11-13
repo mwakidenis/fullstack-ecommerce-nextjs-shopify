@@ -32,7 +32,7 @@
     ".next/types/**/*.ts",
     "jest.d.ts",
     "cypress/**/*.ts",
-    "next.config.ts",
+    "next.config.js",
     "jest.setup.ts",
     "types/*.d.ts",
   ],

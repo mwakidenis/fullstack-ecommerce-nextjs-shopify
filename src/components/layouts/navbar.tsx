@@ -32,10 +32,11 @@ export default async function Navbar({ active }: NavbarProps) {
   ];
 
   // Convert categories to nav items
-  const categoryNavItems: NavItem[] = categories.map((category: Category) => ({
-    title: category.title,
-    url: `/product-category/${category.handle}`
-  }));
+  const categoryNavItems: NavItem[] =
+    categories?.map((category: Category) => ({
+      title: category.title,
+      url: `/product-category/${category.handle}`
+    })) ?? [];
 
   // Combine static and dynamic nav items
   const allNavItems = [...staticNavItems, ...categoryNavItems];

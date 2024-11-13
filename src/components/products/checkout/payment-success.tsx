@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useCartContext } from "@/providers/cart-context";
 import Loader from "@/components/layouts/loader";
 import { showToast } from "@/lib/utils/toast";
 import Link from "next/link";
 
-export default function PaymentSuccess() {
+// Separate component for payment processing logic
+function PaymentProcessor() {
   // Get cart context functions for cleanup after successful payment
   const { isLoading, isFetched, clearCart } = useCartContext();
 
@@ -104,5 +105,14 @@ export default function PaymentSuccess() {
         Continue Shopping
       </Link>
     </div>
+  );
+}
+
+// Main component wrapped with Suspense because we are using useSearchParams which is a client component hook that requires Suspense boundaries
+export default function PaymentSuccess() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <PaymentProcessor />
+    </Suspense>
   );
 }

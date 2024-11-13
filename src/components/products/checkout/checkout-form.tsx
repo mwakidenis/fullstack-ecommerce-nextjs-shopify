@@ -26,7 +26,7 @@ const CheckoutForm = () => {
 
   // Redirect to cart if empty
   useEffect(() => {
-    if (isFetched && !isLoading && (!cart || cart.lines.length === 0)) {
+    if (isFetched && !isLoading && (!cart || cart.lines.edges.length === 0)) {
       router.push("/cart");
     }
   }, [cart, isLoading, isFetched, router]);

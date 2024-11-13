@@ -18,6 +18,35 @@ import {
 import { cookies } from "next/headers";
 
 /**
+ * Helper function to transform cart line items and handle image structure
+ */
+function transformCartLineItem(node: any) {
+  const productImage = node.merchandise.product.images?.edges[0]?.node;
+  const variantImage = node.merchandise.image;
+
+  return {
+    id: node.id,
+    quantity: node.quantity,
+    merchandise: {
+      id: node.merchandise.id,
+      title: node.merchandise.title,
+      price: node.merchandise.price,
+      image: {
+        url: variantImage?.url || productImage?.url || "",
+        altText: variantImage?.altText || productImage?.altText || ""
+      },
+      product: {
+        title: node.merchandise.product.title,
+        image: {
+          url: productImage?.url || "",
+          altText: productImage?.altText || ""
+        }
+      }
+    }
+  };
+}
+
+/**
  * GET - Retrieves the current cart data
  * Returns transformed cart data including items, costs, and quantities
  * If no cart exists, returns an empty cart structure
@@ -52,19 +81,11 @@ export async function GET() {
       checkoutUrl: cart.checkoutUrl,
       totalQuantity: cart.totalQuantity,
       cost: cart.cost,
-      lines: cart.lines.edges.map(({ node }) => ({
-        id: node.id,
-        quantity: node.quantity,
-        merchandise: {
-          id: node.merchandise.id,
-          title: node.merchandise.title,
-          price: node.merchandise.price,
-          product: {
-            title: node.merchandise.product.title,
-            image: node.merchandise.product.image
-          }
-        }
-      }))
+      lines: {
+        edges: cart.lines.edges.map(({ node }) => ({
+          node: transformCartLineItem(node)
+        }))
+      }
     };
 
     return NextResponse.json(transformedCart);
@@ -100,8 +121,18 @@ export async function POST(req: Request) {
         variables
       );
 
+      // Transform the cart before returning
+      const transformedCart = {
+        ...cartCreate.cart,
+        lines: {
+          edges: cartCreate.cart.lines.edges.map(({ node }) => ({
+            node: transformCartLineItem(node)
+          }))
+        }
+      };
+
       // Create response with cart data and set cart ID cookie
-      const response = NextResponse.json(cartCreate.cart);
+      const response = NextResponse.json(transformedCart);
       response.cookies.set({
         name: "cartId",
         value: cartCreate.cart.id,
@@ -111,7 +142,7 @@ export async function POST(req: Request) {
         maxAge: 60 * 60 * 24 * 30 // 30 days
       });
 
-      console.log("Created new cart with ID:", cartCreate.cart.id); // Debug log
+      // console.log("Created new cart with ID:", cartCreate.cart.id); // Debug log
       return response;
     }
 
@@ -130,7 +161,16 @@ export async function POST(req: Request) {
       ADD_TO_CART,
       variables
     );
-    return NextResponse.json(cartLinesAdd.cart);
+    // Transform the cart before returning
+    const transformedCart = {
+      ...cartLinesAdd.cart,
+      lines: {
+        edges: cartLinesAdd.cart.lines.edges.map(({ node }) => ({
+          node: transformCartLineItem(node)
+        }))
+      }
+    };
+    return NextResponse.json(transformedCart);
   } catch (error) {
     console.error("Cart operation failed:", error);
     return NextResponse.json(
@@ -166,7 +206,18 @@ export async function PUT(req: Request) {
         UPDATE_CART,
         variables
       );
-    return NextResponse.json(cartLinesUpdate.cart);
+
+    // Transform the cart before returning
+    const transformedCart = {
+      ...cartLinesUpdate.cart,
+      lines: {
+        edges: cartLinesUpdate.cart.lines.edges.map(({ node }) => ({
+          node: transformCartLineItem(node)
+        }))
+      }
+    };
+
+    return NextResponse.json(transformedCart);
   } catch (error) {
     console.error("Failed to update cart:", error);
     return NextResponse.json(
@@ -197,7 +248,18 @@ export async function DELETE(req: Request) {
         REMOVE_FROM_CART,
         variables
       );
-    return NextResponse.json(cartLinesRemove.cart);
+
+    // Transform the cart before returning
+    const transformedCart = {
+      ...cartLinesRemove.cart,
+      lines: {
+        edges: cartLinesRemove.cart.lines.edges.map(({ node }) => ({
+          node: transformCartLineItem(node)
+        }))
+      }
+    };
+
+    return NextResponse.json(transformedCart);
   } catch (error) {
     console.error("Failed to remove item from cart:", error);
     return NextResponse.json(

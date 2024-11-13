@@ -1,3 +1,9 @@
+// import { Product, ProductVariant, Image, ProductOption } from "shopify-buy";
+
+// export type ProductProps = Product;
+// export type ShopifyVariant = ProductVariant;
+// export type ShopifyImage = Image;
+// export type ShopifyOption = ProductOption;
 /**
  * Product-related type definitions
  * Represents the structure of product data from Shopify
@@ -57,7 +63,7 @@ export interface ProductOption {
 }
 
 // Product image interface
-interface ProductImage {
+export interface ProductImage {
   id: string; // Image identifier
   src: string; // Image URL
   altText: string; // Accessibility text

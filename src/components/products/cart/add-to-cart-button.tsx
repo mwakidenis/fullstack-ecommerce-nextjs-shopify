@@ -28,6 +28,8 @@ const AddToCartButton = memo(function AddToCartButton({
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
+  // console.log("Available for sale: ", availableForSale);
+
   // Handles the cart addition process and shows appropriate toast messages
   const handleAddToCart = async () => {
     setIsAddingToCart(true);

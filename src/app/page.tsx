@@ -1,4 +1,3 @@
-import HomeHeros from "@/components/heros/home-heros";
 import HomeLatestProducts from "@/components/products/home-latest-products";
 import HomeTrendingProducts from "@/components/products/home-trending-products";
 import HomeProductsByCategory from "@/components/products/home-products-by-category";

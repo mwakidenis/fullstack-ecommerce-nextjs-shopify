@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Generate URLs for all product detail pages
   // Uses product handle for URL and update date for lastModified
-  const productPages = products.map((product) => ({
+  const productPages = products.products.map((product) => ({
     url: `${baseUrl}/products/${product.handle}`,
     lastModified: product.updatedAt || new Date().toISOString()
     // TODO: Add changeFrequency when content update patterns are established
