@@ -4,7 +4,7 @@ import { generateCheckouttPageMetadata } from "@/components/meta-data";
 // Generate SEO metadata for the checkout page
 export const metadata = generateCheckouttPageMetadata();
 
-// Main checkout page component
+// Main checkout page component 
 // Provides responsive container and styling for checkout form
 export default function CheckoutPage() {
   return (
